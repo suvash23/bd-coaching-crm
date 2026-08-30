@@ -4,12 +4,12 @@ Use this document to track development progress based on the architecture plan. 
 
 ## Milestone 1: Foundation (Week 1)
 - [x] **Project Scaffolding**: Setup Laravel 11, React, Inertia.js, and Tailwind CSS.
-- [ ] **Database Setup**: Configure PostgreSQL connection in `.env`.
-- [ ] **Multi-Tenancy Setup**: 
-  - Create `Organization` model and migration.
-  - Implement `TenantScope` (Global Scope) for data isolation.
-  - Add `organization_id` to `users` and implement logic to assign users to an organization.
-- [ ] **Roles & Permissions**: Minimal RBAC setup (Distinguish between Admin and Teacher).
+- [x] **Database Setup**: Configure PostgreSQL connection in `.env`.
+- [x] **Multi-Tenancy Setup**: 
+  - [x] Create `Organization` model and migration.
+  - [x] Implement `TenantScope` (Global Scope) for data isolation.
+  - [x] Add `organization_id` to `users` and implement logic to assign users to an organization.
+- [x] **Roles & Permissions**: Minimal RBAC setup (Distinguish between Admin and Teacher).
 - [ ] **Base UI Layout**: Setup authenticated Sidebar layout with navigation links.
 
 ## Milestone 2: Academics & Entities (Week 2)
