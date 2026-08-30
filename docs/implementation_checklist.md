@@ -10,7 +10,7 @@ Use this document to track development progress based on the architecture plan. 
   - [x] Implement `TenantScope` (Global Scope) for data isolation.
   - [x] Add `organization_id` to `users` and implement logic to assign users to an organization.
 - [x] **Roles & Permissions**: Minimal RBAC setup (Distinguish between Admin and Teacher).
-- [ ] **Base UI Layout**: Setup authenticated Sidebar layout with navigation links.
+- [x] **Base UI Layout**: Setup authenticated Sidebar layout with navigation links.
 
 ## Milestone 2: Academics & Entities (Week 2)
 - [ ] **Courses**: 
