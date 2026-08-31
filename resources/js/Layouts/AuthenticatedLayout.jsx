@@ -8,8 +8,8 @@ const SidebarLink = ({ href, active, children }) => (
     <Link
         href={href}
         className={`flex items-center px-4 py-3 text-sm font-medium transition-colors ${active
-                ? 'bg-blue-50 text-blue-700 dark:bg-gray-800 dark:text-white border-r-4 border-blue-600'
-                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
+            ? 'bg-blue-50 text-blue-700 dark:bg-gray-800 dark:text-white border-r-4 border-blue-600'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
             }`}
     >
         {children}
@@ -24,7 +24,8 @@ export default function AuthenticatedLayout({ header, children }) {
         { name: 'Dashboard', href: route('dashboard'), active: route().current('dashboard') },
         { name: 'Schedule / Classes', href: '#', active: false },
         { name: 'Students', href: '#', active: false },
-        { name: 'Courses & Batches', href: '#', active: false },
+        { name: 'Courses', href: route('courses.index'), active: route().current('courses.*') },
+        { name: 'Batches', href: route('batches.index'), active: route().current('batches.*') },
         { name: 'Fees & Collection', href: '#', active: false },
         { name: 'Broadcasts', href: '#', active: false },
         { name: 'Reports', href: '#', active: false },

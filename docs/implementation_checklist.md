@@ -13,12 +13,12 @@ Use this document to track development progress based on the architecture plan. 
 - [x] **Base UI Layout**: Setup authenticated Sidebar layout with navigation links.
 
 ## Milestone 2: Academics & Entities (Week 2)
-- [ ] **Courses**: 
-  - Migration & Model.
-  - CRUD operations and UI for managing Courses.
-- [ ] **Batches**: 
-  - Migration & Model (Link to Courses).
-  - CRUD operations and UI for managing Batches.
+- [x] **Courses**: 
+  - [x] Migration & Model.
+  - [x] CRUD operations and UI for managing Courses.
+- [x] **Batches**: 
+  - [x] Migration & Model (Link to Courses).
+  - [x] CRUD operations and UI for managing Batches.
 - [ ] **Students**: 
   - Migration & Model.
   - CRUD operations and UI.
