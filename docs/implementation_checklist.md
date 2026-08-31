@@ -38,13 +38,13 @@ Use this document to track development progress based on the architecture plan. 
 
 ## Milestone 4: Financials (Week 4)
 - [ ] **Fees (Invoices)**: 
-  - Migration & Model for tracking money owed.
-  - Monthly automated fee generator (Cron Job on the 1st of the month).
+  - [x] Migration & Model for tracking money owed.
+  - [x] Monthly automated fee generator (Cron Job on the 1st of the month).
 - [ ] **Payments (Ledger)**: 
-  - Migration & Model linking to Fees.
-  - UI to manually log payments (Cash/bKash).
-  - Logic to update Fee status (Unpaid -> Partial -> Paid).
-- [ ] **Receipts**: Basic generation/printing view for payment confirmation.
+  - [x] Migration & Model linking to Fees.
+  - [x] UI to manually log payments (Cash/bKash).
+  - [x] Logic to update Fee status (Unpaid -> Partial -> Paid).
+- [x] **Receipts**: Basic generation/printing view for payment confirmation.
 
 ## Milestone 5: Communication & Reminders (Week 5)
 - [ ] **SMS Interface**: Create base `SmsProviderInterface` for Bangladesh providers.

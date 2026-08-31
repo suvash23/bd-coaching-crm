@@ -31,6 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/classes', [\App\Http\Controllers\ClassSessionController::class, 'index'])->name('classes.index');
     Route::get('/classes/{classSession}', [\App\Http\Controllers\ClassSessionController::class, 'show'])->name('classes.show');
     Route::put('/classes/{classSession}/attendance', [\App\Http\Controllers\AttendanceController::class, 'update'])->name('classes.attendance.update');
+
+    // Financials
+    Route::get('/invoices', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.index');
+    Route::post('/invoices/{invoice}/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('invoices.payments.store');
+    Route::get('/payments/{payment}/receipt', [\App\Http\Controllers\PaymentController::class, 'show'])->name('payments.receipt');
 });
 
 require __DIR__ . '/auth.php';

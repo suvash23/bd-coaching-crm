@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('classes:generate')->dailyAt('00:00');
+Schedule::command('fees:generate-monthly')->monthlyOn(1, '01:00');

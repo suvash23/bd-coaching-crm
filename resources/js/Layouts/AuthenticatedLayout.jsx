@@ -26,7 +26,7 @@ export default function AuthenticatedLayout({ header, children }) {
         { name: 'Students', href: route('students.index'), active: route().current('students.*') },
         { name: 'Courses', href: route('courses.index'), active: route().current('courses.*') },
         { name: 'Batches', href: route('batches.index'), active: route().current('batches.*') },
-        { name: 'Fees & Collection', href: '#', active: false },
+        { name: 'Fees & Collection', href: route('invoices.index'), active: route().current('invoices.*') },
         { name: 'Broadcasts', href: '#', active: false },
         { name: 'Reports', href: '#', active: false },
         { name: 'Settings', href: '#', active: false },
