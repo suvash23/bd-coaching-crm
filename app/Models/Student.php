@@ -9,15 +9,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 
 #[ScopedBy([TenantScope::class])]
-class Batch extends Model
+class Student extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'organization_id',
-        'course_id',
         'name',
-        'capacity',
+        'phone',
+        'guardian_name',
+        'guardian_phone',
+        'student_id_number',
         'status',
     ];
 
@@ -26,14 +28,9 @@ class Batch extends Model
         return $this->belongsTo(Organization::class);
     }
 
-    public function course()
+    public function batches()
     {
-        return $this->belongsTo(Course::class);
-    }
-
-    public function students()
-    {
-        return $this->belongsToMany(Student::class)
+        return $this->belongsToMany(Batch::class)
             ->withPivot('join_date', 'status')
             ->withTimestamps();
     }

@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('courses', \App\Http\Controllers\CourseController::class)->except(['create', 'show', 'edit']);
     Route::resource('batches', \App\Http\Controllers\BatchController::class)->except(['create', 'show', 'edit']);
+    Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['create', 'show', 'edit']);
 });
 
 require __DIR__ . '/auth.php';

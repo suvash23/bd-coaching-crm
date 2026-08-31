@@ -19,12 +19,12 @@ Use this document to track development progress based on the architecture plan. 
 - [x] **Batches**: 
   - [x] Migration & Model (Link to Courses).
   - [x] CRUD operations and UI for managing Batches.
-- [ ] **Students**: 
-  - Migration & Model.
-  - CRUD operations and UI.
-- [ ] **Student-Batch Enrollment**: 
-  - `batch_student` pivot table logic.
-  - UI for assigning/removing students from batches.
+- [x] **Students**: 
+  - [x] Migration & Model.
+  - [x] CRUD operations and UI.
+- [x] **Student-Batch Enrollment**: 
+  - [x] `batch_student` pivot table logic.
+  - [x] UI for assigning/removing students from batches.
 
 ## Milestone 3: Class & Attendance Operations (Week 3)
 - [ ] **Schedules Engine**: Setup abstract ScheduleRules for batches (e.g., Sunday 5 PM).

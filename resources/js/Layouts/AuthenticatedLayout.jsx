@@ -23,7 +23,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const navItems = [
         { name: 'Dashboard', href: route('dashboard'), active: route().current('dashboard') },
         { name: 'Schedule / Classes', href: '#', active: false },
-        { name: 'Students', href: '#', active: false },
+        { name: 'Students', href: route('students.index'), active: route().current('students.*') },
         { name: 'Courses', href: route('courses.index'), active: route().current('courses.*') },
         { name: 'Batches', href: route('batches.index'), active: route().current('batches.*') },
         { name: 'Fees & Collection', href: '#', active: false },
