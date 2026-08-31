@@ -26,6 +26,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('courses', \App\Http\Controllers\CourseController::class)->except(['create', 'show', 'edit']);
     Route::resource('batches', \App\Http\Controllers\BatchController::class)->except(['create', 'show', 'edit']);
     Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['create', 'show', 'edit']);
+
+    // Class Sessions and Attendance
+    Route::get('/classes', [\App\Http\Controllers\ClassSessionController::class, 'index'])->name('classes.index');
+    Route::get('/classes/{classSession}', [\App\Http\Controllers\ClassSessionController::class, 'show'])->name('classes.show');
+    Route::put('/classes/{classSession}/attendance', [\App\Http\Controllers\AttendanceController::class, 'update'])->name('classes.attendance.update');
 });
 
 require __DIR__ . '/auth.php';

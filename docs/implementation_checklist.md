@@ -27,14 +27,14 @@ Use this document to track development progress based on the architecture plan. 
   - [x] UI for assigning/removing students from batches.
 
 ## Milestone 3: Class & Attendance Operations (Week 3)
-- [ ] **Schedules Engine**: Setup abstract ScheduleRules for batches (e.g., Sunday 5 PM).
-- [ ] **Class Sessions**: 
-  - Migration & Model for discrete `class_sessions`.
-  - Cron Job / Action to generate actual upcoming sessions based on Schedules.
-- [ ] **Calendar UI**: View upcoming classes in a list or calendar.
-- [ ] **Attendance System**: 
-  - `attendances` migration and pivot structure.
-  - Quick-mark Attendance UI (Present/Absent/Late).
+- [x] **Schedules Engine**: Setup abstract ScheduleRules for batches (e.g., Sunday 5 PM).
+- [x] **Class Sessions**: 
+  - [x] Migration & Model for discrete `class_sessions`.
+  - [x] Cron Job / Action to generate actual upcoming sessions based on Schedules.
+- [x] **Calendar UI**: View upcoming classes in a list or calendar.
+- [x] **Attendance System**: 
+  - [x] `attendances` migration and pivot structure.
+  - [x] Quick-mark Attendance UI (Present/Absent/Late).
 
 ## Milestone 4: Financials (Week 4)
 - [ ] **Fees (Invoices)**: 

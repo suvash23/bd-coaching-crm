@@ -9,16 +9,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 
 #[ScopedBy([TenantScope::class])]
-class Batch extends Model
+class ClassSession extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'organization_id',
-        'course_id',
-        'name',
-        'capacity',
+        'batch_id',
+        'teacher_id',
+        'scheduled_date',
+        'start_time',
+        'end_time',
         'status',
+        'topic',
     ];
 
     public function organization()
@@ -26,25 +29,18 @@ class Batch extends Model
         return $this->belongsTo(Organization::class);
     }
 
-    public function course()
+    public function batch()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Batch::class);
     }
 
-    public function students()
+    public function teacher()
     {
-        return $this->belongsToMany(Student::class)
-            ->withPivot('join_date', 'status')
-            ->withTimestamps();
+        return $this->belongsTo(User::class, 'teacher_id');
     }
 
-    public function scheduleRules()
+    public function attendances()
     {
-        return $this->hasMany(ScheduleRule::class);
-    }
-
-    public function classSessions()
-    {
-        return $this->hasMany(ClassSession::class);
+        return $this->hasMany(Attendance::class);
     }
 }
