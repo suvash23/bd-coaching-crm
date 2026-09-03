@@ -18,9 +18,15 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $organization = $request->user()->organization;
+        if ($organization && $organization->logo_path) {
+            $organization->logo_url = asset('storage/' . $organization->logo_path);
+        }
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'organization' => $organization,
         ]);
     }
 

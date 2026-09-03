@@ -35,7 +35,7 @@ class GenerateMonthlyFees extends Command
                 ->with([
                     'students' => function ($query) {
                         // We only want to bill active students
-                        $query->where('status', 'active');
+                        $query->where('students.status', 'active');
                     }
                 ])
                 ->get();

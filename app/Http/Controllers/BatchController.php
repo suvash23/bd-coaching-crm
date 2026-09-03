@@ -11,7 +11,7 @@ class BatchController extends Controller
 {
     public function index()
     {
-        $batches = Batch::with('course')->latest()->get();
+        $batches = Batch::with('course', 'scheduleRules')->latest()->get();
         // Get all courses from the organization for the creation dropdown
         $courses = Course::latest()->get(['id', 'name']);
 

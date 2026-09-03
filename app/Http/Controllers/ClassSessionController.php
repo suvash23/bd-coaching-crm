@@ -11,16 +11,43 @@ class ClassSessionController extends Controller
 {
     public function index(Request $request)
     {
+        $view = $request->query('view', 'day'); // 'day' or 'week'
         $date = $request->query('date', Carbon::today()->toDateString());
 
+        $anchorDate = Carbon::parse($date);
+
+        if ($view === 'week') {
+            $start = $anchorDate->copy()->startOfWeek(Carbon::MONDAY);
+            $end = $anchorDate->copy()->endOfWeek(Carbon::SUNDAY);
+
+            $classes = ClassSession::with('batch.course')
+                ->whereBetween('scheduled_date', [$start->toDateString(), $end->toDateString()])
+                ->oldest('scheduled_date')
+                ->oldest('start_time')
+                ->get()
+                ->groupBy('scheduled_date'); // keyed by 'YYYY-MM-DD'
+
+            return Inertia::render('Classes/Index', [
+                'classes' => $classes,
+                'currentDate' => $anchorDate->toDateString(),
+                'view' => 'week',
+                'weekStart' => $start->toDateString(),
+                'weekEnd' => $end->toDateString(),
+            ]);
+        }
+
+        // Daily view (default)
         $classes = ClassSession::with('batch.course')
-            ->whereDate('scheduled_date', $date)
+            ->whereDate('scheduled_date', $anchorDate->toDateString())
             ->oldest('start_time')
             ->get();
 
         return Inertia::render('Classes/Index', [
             'classes' => $classes,
-            'currentDate' => $date
+            'currentDate' => $anchorDate->toDateString(),
+            'view' => 'day',
+            'weekStart' => null,
+            'weekEnd' => null,
         ]);
     }
 
@@ -36,14 +63,14 @@ class ClassSessionController extends Controller
                 'id' => $student->id,
                 'name' => $student->name,
                 'student_id_number' => $student->student_id_number,
-                'status' => $attendance ? $attendance->status : 'present', // assume present by default for UI friendliness
+                'status' => $attendance ? $attendance->status : 'present',
                 'recorded' => $attendance ? true : false,
             ];
         });
 
         return Inertia::render('Classes/Attendance', [
             'classSession' => $classSession->load('batch.course'),
-            'students' => $students
+            'students' => $students,
         ]);
     }
 }

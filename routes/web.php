@@ -14,17 +14,21 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::post('/organization', [\App\Http\Controllers\OrganizationSettingsController::class, 'update'])->name('organization.update');
+
     Route::resource('courses', \App\Http\Controllers\CourseController::class)->except(['create', 'show', 'edit']);
     Route::resource('batches', \App\Http\Controllers\BatchController::class)->except(['create', 'show', 'edit']);
+    Route::post('/batches/{batch}/schedule-rules', [\App\Http\Controllers\ScheduleRuleController::class, 'store'])->name('batches.schedule-rules.store');
+    Route::delete('/batches/{batch}/schedule-rules/{scheduleRule}', [\App\Http\Controllers\ScheduleRuleController::class, 'destroy'])->name('batches.schedule-rules.destroy');
     Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['create', 'show', 'edit']);
 
     // Class Sessions and Attendance

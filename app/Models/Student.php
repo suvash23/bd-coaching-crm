@@ -21,6 +21,7 @@ class Student extends Model
         'guardian_phone',
         'student_id_number',
         'status',
+        'photo_path',
     ];
 
     public function organization()

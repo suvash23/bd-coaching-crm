@@ -10,18 +10,37 @@ use Inertia\Inertia;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::with('batches')->latest()->get()->map(function ($student) {
+        $search = $request->query('search');
+
+        $query = Student::with('batches')->latest();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'ilike', '%' . $search . '%')
+                    ->orWhere('student_id_number', 'ilike', '%' . $search . '%')
+                    ->orWhere('phone', 'ilike', '%' . $search . '%');
+            });
+        }
+
+        $students = $query->get()->map(function ($student) {
             $student->photo_url = $student->photo_path ? asset('storage/' . $student->photo_path) : null;
             return $student;
         });
 
         $batches = Batch::where('status', 'active')->latest()->get(['id', 'name']);
 
+        $organization = $request->user()->organization;
+        if ($organization && $organization->logo_path) {
+            $organization->logo_url = asset('storage/' . $organization->logo_path);
+        }
+
         return Inertia::render('Students/Index', [
             'students' => $students,
             'batches' => $batches,
+            'filters' => ['search' => $search],
+            'organization' => $organization,
         ]);
     }
 
@@ -39,7 +58,41 @@ class StudentController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        $validated['organization_id'] = $request->user()->organization_id;
+        $organization = $request->user()->organization;
+        $validated['organization_id'] = $organization->id;
+
+        if (empty($validated['student_id_number'])) {
+            $prefix = strtoupper($organization->short_code);
+            if (empty($prefix)) {
+                // Auto generate prefix from org name, e.g. "BD Coaching Center" -> "BCC"
+                $words = explode(' ', $organization->name);
+                $prefix = '';
+                foreach ($words as $w) {
+                    if (ctype_alpha(substr($w, 0, 1))) {
+                        $prefix .= strtoupper(substr($w, 0, 1));
+                    }
+                }
+                $prefix = substr($prefix, 0, 4); // Max 4 letters
+                if (empty($prefix)) {
+                    $prefix = 'STU';
+                }
+            }
+
+            // Get last student ID for this org to generate sequence
+            $lastStudent = Student::withTrashed()->where('organization_id', $organization->id)
+                ->where('student_id_number', 'like', $prefix . '-%')
+                ->orderBy('id', 'desc')->first();
+
+            $sequence = 1;
+            if ($lastStudent) {
+                $lastParts = explode('-', $lastStudent->student_id_number);
+                if (count($lastParts) > 1) {
+                    $sequence = (int) end($lastParts) + 1;
+                }
+            }
+
+            $validated['student_id_number'] = $prefix . '-' . date('y') . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+        }
 
         if ($request->hasFile('photo')) {
             $validated['photo_path'] = $request->file('photo')->store('students/photos', 'public');
