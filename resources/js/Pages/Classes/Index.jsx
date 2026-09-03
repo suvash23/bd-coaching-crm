@@ -145,8 +145,14 @@ export default function Index({ classes, currentDate, view, weekStart, weekEnd }
                         </button>
 
                         <button onClick={() => navigate({ date: new Date().toLocaleDateString('en-CA'), view })}
-                            className="px-3 py-1.5 text-sm font-medium bg-white border border-gray-200 shadow-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors ml-1">
+                            className="px-3 py-1.5 text-sm font-medium bg-white border border-gray-200 shadow-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mx-1">
                             Today
+                        </button>
+
+                        <button onClick={() => router.post(route('classes.generate'))}
+                            className="px-4 py-1.5 text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border border-transparent rounded-lg transition-colors ml-auto sm:ml-0 flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            Generate Today
                         </button>
                     </div>
                 </div>

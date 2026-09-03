@@ -5,10 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\ClassSession;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Artisan;
 use Carbon\Carbon;
 
 class ClassSessionController extends Controller
 {
+    public function generate()
+    {
+        Artisan::call('classes:generate');
+        return redirect()->back()->with('success', 'Today\'s missing classes have been generated successfully.');
+    }
+
     public function index(Request $request)
     {
         $view = $request->query('view', 'day'); // 'day' or 'week'

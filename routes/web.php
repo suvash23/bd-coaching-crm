@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['create', 'show', 'edit']);
 
     // Class Sessions and Attendance
+    Route::post('/classes/generate', [\App\Http\Controllers\ClassSessionController::class, 'generate'])->name('classes.generate');
     Route::get('/classes', [\App\Http\Controllers\ClassSessionController::class, 'index'])->name('classes.index');
     Route::get('/classes/{classSession}', [\App\Http\Controllers\ClassSessionController::class, 'show'])->name('classes.show');
     Route::put('/classes/{classSession}/attendance', [\App\Http\Controllers\AttendanceController::class, 'update'])->name('classes.attendance.update');
@@ -40,6 +41,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoices', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.index');
     Route::post('/invoices/{invoice}/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('invoices.payments.store');
     Route::get('/payments/{payment}/receipt', [\App\Http\Controllers\PaymentController::class, 'show'])->name('payments.receipt');
+    // Reports
+    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+
+    // Broadcasts
+    Route::get('/broadcasts', [\App\Http\Controllers\BroadcastController::class, 'index'])->name('broadcasts.index');
+    Route::post('/broadcasts', [\App\Http\Controllers\BroadcastController::class, 'store'])->name('broadcasts.store');
 });
 
 require __DIR__ . '/auth.php';

@@ -44,8 +44,8 @@ export default function AuthenticatedLayout({ header, children }) {
         { name: 'Courses', href: route('courses.index'), active: route().current('courses.*') },
         { name: 'Batches', href: route('batches.index'), active: route().current('batches.*') },
         { name: 'Fees & Collection', href: route('invoices.index'), active: route().current('invoices.*') },
-        { name: 'Broadcasts', href: '#', active: false },
-        { name: 'Reports', href: '#', active: false },
+        { name: 'Broadcasts', href: route('broadcasts.index'), active: route().current('broadcasts.*') },
+        { name: 'Reports', href: route('reports.index'), active: route().current('reports.*') },
         { name: 'Settings', href: route('profile.edit'), active: route().current('profile.edit') },
     ];
 
@@ -71,14 +71,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 <nav className="flex-1 overflow-y-auto py-4 space-y-0.5">
                     {/* Group label */}
                     <p className="px-5 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Main Menu</p>
-                    {navItems.slice(0, 6).map((item) => (
-                        <SidebarLink key={item.name} href={item.href} active={item.active} icon={NAV_ICONS[item.name]}>
-                            {item.name}
-                        </SidebarLink>
-                    ))}
-                    <div className="my-3 mx-5 border-t border-gray-100" />
-                    <p className="px-5 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Coming Soon</p>
-                    {navItems.slice(6).map((item) => (
+                    {navItems.map((item) => (
                         <SidebarLink key={item.name} href={item.href} active={item.active} icon={NAV_ICONS[item.name]}>
                             {item.name}
                         </SidebarLink>
