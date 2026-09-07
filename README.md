@@ -1,58 +1,85 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# BD Coaching CRM
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A multi-tenant CRM for individual tutors, private-batch teachers, and small-to-medium coaching centers in Bangladesh. It replaces paper registers and spreadsheets with a single place to manage students, batches, class schedules, attendance, and fee collection — localized for BDT and Bangladeshi SMS gateways.
 
-## About Laravel
+See [docs/architecture_plan.md](docs/architecture_plan.md) for the full product/architecture plan and [docs/implementation_checklist.md](docs/implementation_checklist.md) for current build progress.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tech Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Backend:** Laravel 13 (PHP ^8.3)
+- **Frontend:** Inertia.js + React, Tailwind CSS
+- **Auth:** Laravel Breeze + Sanctum
+- **Testing:** Pest
+- **Database:** MySQL locally; PostgreSQL targeted for production (see architecture plan)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Multi-Tenancy
 
-## Learning Laravel
+Every tenant-owned table carries an `organization_id`, enforced automatically by a global Eloquent scope (`app/Models/Scopes/TenantScope.php`) so a query like `Student::all()` is always scoped to the current user's organization. Never trust a client-supplied `organization_id` — always derive it from `$request->user()->organization_id`.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Getting Started
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Prerequisites
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- PHP ^8.3 and Composer
+- Node.js and npm
+- MySQL (or adjust `DB_*` in `.env` for your own database)
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Install & Configure
 
 ```bash
-composer require laravel/boost --dev
+composer install
+npm install
 
-php artisan boost:install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Update the `DB_*` values in `.env` for your local database, then create the database and run migrations:
 
-## Contributing
+```bash
+php artisan migrate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Run It
 
-## Code of Conduct
+Quickest path — Laravel's built-in dev script runs the PHP server, queue listener, log viewer, and Vite dev server together:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer dev
+```
 
-## Security Vulnerabilities
+Then visit `http://localhost:8000`.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Alternatively, run Vite and the PHP server separately:
 
-## License
+```bash
+npm run dev        # Vite dev server (HMR)
+php artisan serve  # PHP server
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Local HTTPS Domain (this dev machine)
+
+This project is also served locally at `https://bd-coaching-crm.dev` through a hand-rolled Homebrew nginx + dedicated PHP-FPM 8.5 pool (not Laravel Herd/Valet), matching the setup used for other local projects on this machine:
+
+- PHP-FPM pool: `/usr/local/etc/php/8.5/php-fpm.d/bd-coaching-crm.conf`
+- nginx vhost: `/usr/local/etc/nginx/servers/bd-coaching-crm-dev.conf`
+- TLS cert (mkcert): `/usr/local/etc/nginx/ssl/bd-coaching-crm/`
+- `/etc/hosts`: `127.0.0.1  bd-coaching-crm.dev`
+- `.env`: `APP_URL=https://bd-coaching-crm.dev`, plus `VITE_DEV_SERVER_KEY`/`VITE_DEV_SERVER_CERT`/`VITE_DEV_SERVER_HOST` pointed at the mkcert files above
+- `vite.config.js`: `detectTls: false` on the `laravel()` plugin, so Vite reads those `VITE_DEV_SERVER_*` values instead of auto-detecting a Herd cert
+
+With this running, just use `npm run dev` for asset HMR — nginx/PHP-FPM handle serving PHP, so `php artisan serve` isn't needed.
+
+## Testing
+
+```bash
+composer test
+# or
+php artisan test
+```
+
+## Code Style
+
+```bash
+./vendor/bin/pint
+```
