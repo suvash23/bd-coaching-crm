@@ -51,8 +51,10 @@ class StudentController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
             'guardian_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:20',
+            'guardian_email' => 'nullable|email|max:255',
             'student_id_number' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
             'batch_ids' => 'nullable|array',
@@ -118,8 +120,10 @@ class StudentController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
             'guardian_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:20',
+            'guardian_email' => 'nullable|email|max:255',
             'student_id_number' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
             'batch_ids' => 'nullable|array',

@@ -82,22 +82,22 @@ const StudentCard = ({ student, onEdit, onDelete, onPrint, onDiscount }) => (
             )}
         </div>
 
-        <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-            <button onClick={() => onPrint(student)}
-                className="flex-1 py-1.5 rounded-lg text-xs font-medium text-emerald-600 hover:bg-emerald-50 transition-colors">
-                Print ID
+        <div className="flex gap-1 mt-4 pt-4 border-t border-gray-100 justify-center">
+            <button onClick={() => onPrint(student)} title="Print ID"
+                className="p-2 rounded-lg text-emerald-600 hover:bg-emerald-50 transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
             </button>
-            <button onClick={() => onDiscount(student)}
-                className="flex-1 py-1.5 rounded-lg text-xs font-medium text-amber-600 hover:bg-amber-50 transition-colors">
-                Discounts
+            <button onClick={() => onDiscount(student)} title="Discounts"
+                className="p-2 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </button>
-            <button onClick={() => onEdit(student)}
-                className="flex-1 py-1.5 rounded-lg text-xs font-medium text-indigo-600 hover:bg-indigo-50 transition-colors">
-                Edit
+            <button onClick={() => onEdit(student)} title="Edit"
+                className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
             </button>
-            <button onClick={() => onDelete(student)}
-                className="flex-1 py-1.5 rounded-lg text-xs font-medium text-rose-500 hover:bg-rose-50 transition-colors">
-                Delete
+            <button onClick={() => onDelete(student)} title="Delete"
+                className="p-2 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
             </button>
         </div>
     </div>
@@ -136,11 +136,19 @@ const StudentRow = ({ student, onEdit, onDelete, onPrint, onDiscount }) => (
             <StatusBadge status={student.status} />
         </td>
         <td className="px-5 py-3.5 text-right">
-            <div className="flex items-center justify-end gap-3">
-                <button onClick={() => onDiscount(student)} className="text-xs font-medium text-amber-600 hover:text-amber-800">Discounts</button>
-                <button onClick={() => onPrint(student)} className="text-xs font-medium text-emerald-600 hover:text-emerald-800">Print ID</button>
-                <button onClick={() => onEdit(student)} className="text-xs font-medium text-indigo-600 hover:text-indigo-800">Edit</button>
-                <button onClick={() => onDelete(student)} className="text-xs font-medium text-rose-500 hover:text-rose-700">Delete</button>
+            <div className="flex items-center justify-end gap-2">
+                <button onClick={() => onDiscount(student)} title="Discounts" className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </button>
+                <button onClick={() => onPrint(student)} title="Print ID" className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                </button>
+                <button onClick={() => onEdit(student)} title="Edit" className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                </button>
+                <button onClick={() => onDelete(student)} title="Delete" className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
             </div>
         </td>
     </tr>
@@ -190,18 +198,18 @@ export default function Index({ students, batches, courses, filters, organizatio
     const [discountStudent, setDiscountStudent] = useState(null);
 
     const { data, setData, post, reset, errors, processing, clearErrors } = useForm({
-        name: '', phone: '', guardian_name: '', guardian_phone: '',
+        name: '', email: '', phone: '', guardian_name: '', guardian_email: '', guardian_phone: '',
         student_id_number: '', status: 'active', batch_ids: [], photo: null, _method: 'POST',
     });
 
     const openCreate = () => {
         clearErrors(); setEditingStudent(null); setPhotoPreview(null);
-        setData({ name: '', phone: '', guardian_name: '', guardian_phone: '', student_id_number: '', status: 'active', batch_ids: [], photo: null, _method: 'POST' });
+        setData({ name: '', email: '', phone: '', guardian_name: '', guardian_email: '', guardian_phone: '', student_id_number: '', status: 'active', batch_ids: [], photo: null, _method: 'POST' });
         setIsModalOpen(true);
     };
     const openEdit = (student) => {
         clearErrors(); setEditingStudent(student); setPhotoPreview(student.photo_url || null);
-        setData({ name: student.name, phone: student.phone || '', guardian_name: student.guardian_name || '', guardian_phone: student.guardian_phone || '', student_id_number: student.student_id_number || '', status: student.status, batch_ids: student.batches.map(b => b.id), photo: null, _method: 'PUT' });
+        setData({ name: student.name, email: student.email || '', phone: student.phone || '', guardian_name: student.guardian_name || '', guardian_email: student.guardian_email || '', guardian_phone: student.guardian_phone || '', student_id_number: student.student_id_number || '', status: student.status, batch_ids: student.batches.map(b => b.id), photo: null, _method: 'PUT' });
         setIsModalOpen(true);
     };
     const closeModal = () => { setIsModalOpen(false); setTimeout(() => { setEditingStudent(null); setPhotoPreview(null); reset(); }, 200); };
@@ -346,10 +354,17 @@ export default function Index({ students, batches, courses, filters, organizatio
                         {[
                             { label: 'Full Name *', key: 'name', required: true, placeholder: 'e.g. Rahim Uddin' },
                             { label: 'Student ID', key: 'student_id_number', placeholder: 'Auto-generated if blank' },
+                            { label: 'Student Email', key: 'email', placeholder: 'student@example.com' },
                             { label: 'Phone', key: 'phone', placeholder: '017XXXXXXXX' },
+                            { type: 'divider', title: 'Guardian Information' },
                             { label: "Guardian's Name", key: 'guardian_name', placeholder: 'Parent / Guardian' },
+                            { label: "Guardian's Email", key: 'guardian_email', placeholder: 'guardian@example.com' },
                             { label: "Guardian's Phone", key: 'guardian_phone', placeholder: '017XXXXXXXX' },
-                        ].map(f => (
+                        ].map((f, i) => f.type === 'divider' ? (
+                            <div key={`div-${i}`} className="sm:col-span-2 pt-4 pb-1 border-t border-gray-100 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-800">{f.title}</h4>
+                            </div>
+                        ) : (
                             <div key={f.key} className={f.key === 'name' ? 'sm:col-span-2' : ''}>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">{f.label}</label>
                                 <input type="text" value={data[f.key]} required={f.required} placeholder={f.placeholder}
