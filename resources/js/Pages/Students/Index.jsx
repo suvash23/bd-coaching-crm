@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import InputError from '@/Components/InputError';
+import DiscountModal from './DiscountModal';
 
 // ── Avatar ────────────────────────────────────────────────────────────────────
 const Avatar = ({ student, size = 'md' }) => {
@@ -38,7 +39,7 @@ const ListIcon = () => (
 );
 
 // ── Card view item ─────────────────────────────────────────────────────────────
-const StudentCard = ({ student, onEdit, onDelete, onPrint }) => (
+const StudentCard = ({ student, onEdit, onDelete, onPrint, onDiscount }) => (
     <div className="group bg-white border border-gray-100 hover:border-indigo-200 rounded-2xl p-5 flex flex-col transition-all shadow-sm hover:shadow-md">
         <div className="flex items-start gap-4 mb-4">
             <Avatar student={student} size="lg" />
@@ -86,6 +87,10 @@ const StudentCard = ({ student, onEdit, onDelete, onPrint }) => (
                 className="flex-1 py-1.5 rounded-lg text-xs font-medium text-emerald-600 hover:bg-emerald-50 transition-colors">
                 Print ID
             </button>
+            <button onClick={() => onDiscount(student)}
+                className="flex-1 py-1.5 rounded-lg text-xs font-medium text-amber-600 hover:bg-amber-50 transition-colors">
+                Discounts
+            </button>
             <button onClick={() => onEdit(student)}
                 className="flex-1 py-1.5 rounded-lg text-xs font-medium text-indigo-600 hover:bg-indigo-50 transition-colors">
                 Edit
@@ -99,7 +104,7 @@ const StudentCard = ({ student, onEdit, onDelete, onPrint }) => (
 );
 
 // ── List view item ─────────────────────────────────────────────────────────────
-const StudentRow = ({ student, onEdit, onDelete, onPrint }) => (
+const StudentRow = ({ student, onEdit, onDelete, onPrint, onDiscount }) => (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
         <td className="px-5 py-3.5">
             <div className="flex items-center gap-3">
@@ -132,6 +137,7 @@ const StudentRow = ({ student, onEdit, onDelete, onPrint }) => (
         </td>
         <td className="px-5 py-3.5 text-right">
             <div className="flex items-center justify-end gap-3">
+                <button onClick={() => onDiscount(student)} className="text-xs font-medium text-amber-600 hover:text-amber-800">Discounts</button>
                 <button onClick={() => onPrint(student)} className="text-xs font-medium text-emerald-600 hover:text-emerald-800">Print ID</button>
                 <button onClick={() => onEdit(student)} className="text-xs font-medium text-indigo-600 hover:text-indigo-800">Edit</button>
                 <button onClick={() => onDelete(student)} className="text-xs font-medium text-rose-500 hover:text-rose-700">Delete</button>
@@ -152,7 +158,7 @@ const EmptyState = () => (
     </div>
 );
 
-export default function Index({ students, batches, filters, organization }) {
+export default function Index({ students, batches, courses, filters, organization }) {
     const savedView = typeof window !== 'undefined' ? (localStorage.getItem('students_view') ?? 'card') : 'card';
     const [viewMode, setViewMode] = useState(savedView);
     const switchView = (mode) => { setViewMode(mode); localStorage.setItem('students_view', mode); };
@@ -179,6 +185,9 @@ export default function Index({ students, batches, filters, organization }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingStudent, setEditingStudent] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
+
+    const [isDiscountOpen, setIsDiscountOpen] = useState(false);
+    const [discountStudent, setDiscountStudent] = useState(null);
 
     const { data, setData, post, reset, errors, processing, clearErrors } = useForm({
         name: '', phone: '', guardian_name: '', guardian_phone: '',
@@ -249,7 +258,7 @@ export default function Index({ students, batches, filters, organization }) {
                 {/* Student list/cards */}
                 {students.length === 0 ? <EmptyState /> : viewMode === 'card' ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {students.map(s => <StudentCard key={s.id} student={s} onEdit={openEdit} onDelete={handleDelete} onPrint={() => triggerPrint(s)} />)}
+                        {students.map(s => <StudentCard key={s.id} student={s} onEdit={openEdit} onDelete={handleDelete} onPrint={() => triggerPrint(s)} onDiscount={(s) => { setDiscountStudent(s); setIsDiscountOpen(true); }} />)}
                     </div>
                 ) : (
                     <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
@@ -266,7 +275,7 @@ export default function Index({ students, batches, filters, organization }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {students.map(s => <StudentRow key={s.id} student={s} onEdit={openEdit} onDelete={handleDelete} onPrint={() => triggerPrint(s)} />)}
+                                    {students.map(s => <StudentRow key={s.id} student={s} onEdit={openEdit} onDelete={handleDelete} onPrint={() => triggerPrint(s)} onDiscount={(s) => { setDiscountStudent(s); setIsDiscountOpen(true); }} />)}
                                 </tbody>
                             </table>
                         </div>
@@ -380,6 +389,13 @@ export default function Index({ students, batches, filters, organization }) {
                     </div>
                 </form>
             </Modal>
+
+            <DiscountModal
+                show={isDiscountOpen}
+                onClose={() => setIsDiscountOpen(false)}
+                student={discountStudent}
+                courses={courses}
+            />
         </AuthenticatedLayout>
     );
 }

@@ -14,7 +14,7 @@ class StudentController extends Controller
     {
         $search = $request->query('search');
 
-        $query = Student::with('batches')->latest();
+        $query = Student::with(['batches', 'discounts.course'])->latest();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -30,6 +30,7 @@ class StudentController extends Controller
         });
 
         $batches = Batch::where('status', 'active')->latest()->get(['id', 'name']);
+        $courses = \App\Models\Course::latest()->get(['id', 'name']);
 
         $organization = $request->user()->organization;
         if ($organization && $organization->logo_path) {
@@ -39,6 +40,7 @@ class StudentController extends Controller
         return Inertia::render('Students/Index', [
             'students' => $students,
             'batches' => $batches,
+            'courses' => $courses,
             'filters' => ['search' => $search],
             'organization' => $organization,
         ]);

@@ -51,12 +51,38 @@ class GenerateMonthlyFees extends Command
                         ->exists();
 
                     if (!$exists) {
+                        $billingMonthDate = Carbon::createFromFormat('Y-m', $billingMonth)->startOfMonth();
+                        $originalAmount = $course->amount;
+                        $finalAmount = $originalAmount;
+                        $discountAmount = 0;
+
+                        $activeDiscount = \App\Models\StudentDiscount::withoutGlobalScopes()
+                            ->where('student_id', $student->id)
+                            ->where(function ($query) use ($course) {
+                                $query->where('course_id', $course->id)->orWhereNull('course_id');
+                            })
+                            ->where('start_date', '<=', $billingMonthDate)
+                            ->where(function ($query) use ($billingMonthDate) {
+                                $query->whereNull('end_date')->orWhere('end_date', '>=', $billingMonthDate);
+                            })
+                            ->first();
+
+                        if ($activeDiscount) {
+                            if ($activeDiscount->discount_type === 'percentage') {
+                                $discountAmount = $originalAmount * ($activeDiscount->discount_value / 100);
+                            } else {
+                                $discountAmount = $activeDiscount->discount_value;
+                            }
+                            $finalAmount = max(0, $originalAmount - $discountAmount);
+                        }
+
                         Invoice::withoutGlobalScopes()->create([
                             'organization_id' => $course->organization_id,
                             'student_id' => $student->id,
                             'course_id' => $course->id,
                             'billing_month' => $billingMonth,
-                            'amount' => $course->amount,
+                            'amount' => $finalAmount,
+                            'discount_amount' => $discountAmount,
                             'status' => 'unpaid',
                             'due_date' => $dueDate,
                         ]);

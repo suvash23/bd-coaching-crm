@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 
 #[ScopedBy([TenantScope::class])]
-class Invoice extends Model
+class StudentDiscount extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -17,11 +17,10 @@ class Invoice extends Model
         'organization_id',
         'student_id',
         'course_id',
-        'billing_month',
-        'amount',
-        'discount_amount',
-        'status',
-        'due_date',
+        'discount_type',
+        'discount_value',
+        'start_date',
+        'end_date',
     ];
 
     public function organization()
@@ -37,10 +36,5 @@ class Invoice extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
-    }
-
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
     }
 }

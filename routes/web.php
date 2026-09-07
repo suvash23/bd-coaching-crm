@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/batches/{batch}/schedule-rules', [\App\Http\Controllers\ScheduleRuleController::class, 'store'])->name('batches.schedule-rules.store');
     Route::delete('/batches/{batch}/schedule-rules/{scheduleRule}', [\App\Http\Controllers\ScheduleRuleController::class, 'destroy'])->name('batches.schedule-rules.destroy');
     Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['create', 'show', 'edit']);
+    Route::post('/students/{student}/discounts', [\App\Http\Controllers\StudentDiscountController::class, 'store'])->name('students.discounts.store');
+    Route::delete('/students/{student}/discounts/{discount}', [\App\Http\Controllers\StudentDiscountController::class, 'destroy'])->name('students.discounts.destroy');
 
     // Class Sessions and Attendance
     Route::post('/classes/generate', [\App\Http\Controllers\ClassSessionController::class, 'generate'])->name('classes.generate');

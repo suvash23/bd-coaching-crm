@@ -35,4 +35,9 @@ class Student extends Model
             ->withPivot('join_date', 'status')
             ->withTimestamps();
     }
+
+    public function discounts()
+    {
+        return $this->hasMany(StudentDiscount::class);
+    }
 }
