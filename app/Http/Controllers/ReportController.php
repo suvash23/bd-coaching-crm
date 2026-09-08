@@ -6,10 +6,8 @@ use App\Models\Attendance;
 use App\Models\Batch;
 use App\Models\ClassSession;
 use App\Models\Invoice;
-use App\Models\Payment;
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ReportController extends Controller
@@ -27,25 +25,25 @@ class ReportController extends Controller
                  SUM(CASE WHEN status = 'unpaid' THEN amount ELSE 0 END) as total_outstanding,
                  COUNT(*) as invoice_count"
         )
-            ->where('billing_month', 'like', $year . '-%')
+            ->where('billing_month', 'like', $year.'-%')
             ->groupBy('billing_month')
             ->orderBy('billing_month')
             ->get();
 
         $financialTotals = [
-            'total_billed' => Invoice::where('billing_month', 'like', $year . '-%')->sum('amount'),
-            'total_collected' => Invoice::where('billing_month', 'like', $year . '-%')->where('status', 'paid')->sum('amount'),
-            'total_outstanding' => Invoice::where('billing_month', 'like', $year . '-%')->where('status', 'unpaid')->sum('amount'),
-            'total_invoices' => Invoice::where('billing_month', 'like', $year . '-%')->count(),
-            'paid_count' => Invoice::where('billing_month', 'like', $year . '-%')->where('status', 'paid')->count(),
-            'unpaid_count' => Invoice::where('billing_month', 'like', $year . '-%')->where('status', 'unpaid')->count(),
+            'total_billed' => Invoice::where('billing_month', 'like', $year.'-%')->sum('amount'),
+            'total_collected' => Invoice::where('billing_month', 'like', $year.'-%')->where('status', 'paid')->sum('amount'),
+            'total_outstanding' => Invoice::where('billing_month', 'like', $year.'-%')->where('status', 'unpaid')->sum('amount'),
+            'total_invoices' => Invoice::where('billing_month', 'like', $year.'-%')->count(),
+            'paid_count' => Invoice::where('billing_month', 'like', $year.'-%')->where('status', 'paid')->count(),
+            'unpaid_count' => Invoice::where('billing_month', 'like', $year.'-%')->where('status', 'unpaid')->count(),
         ];
 
         // ── Attendance Summary ─────────────────────────────────────────────────
         // Per-batch attendance rate for the selected month
         $batchAttendance = Batch::with(['scheduleRules'])
             ->withCount([
-                'students as active_students' => fn($q) => $q->where('students.status', 'active'),
+                'students as active_students' => fn ($q) => $q->where('students.status', 'active'),
             ])
             ->get()
             ->map(function ($batch) use ($year, $month) {
@@ -56,7 +54,7 @@ class ReportController extends Controller
 
                 $present = Attendance::whereHas(
                     'classSession',
-                    fn($q) => $q
+                    fn ($q) => $q
                         ->where('batch_id', $batch->id)
                         ->whereYear('scheduled_date', $year)
                         ->whereMonth('scheduled_date', $month)
@@ -83,13 +81,13 @@ class ReportController extends Controller
             ->whereMonth('scheduled_date', $month)
             ->count();
 
-        $totalPresent = Attendance::whereHas('classSession', fn($q) => $q
+        $totalPresent = Attendance::whereHas('classSession', fn ($q) => $q
             ->whereYear('scheduled_date', $year)
             ->whereMonth('scheduled_date', $month))
             ->where('status', 'present')
             ->count();
 
-        $totalAbsent = Attendance::whereHas('classSession', fn($q) => $q
+        $totalAbsent = Attendance::whereHas('classSession', fn ($q) => $q
             ->whereYear('scheduled_date', $year)
             ->whereMonth('scheduled_date', $month))
             ->where('status', 'absent')
@@ -105,11 +103,11 @@ class ReportController extends Controller
         // Students per batch
         $studentsPerBatch = Batch::withCount([
             'students as total_students',
-            'students as active_students' => fn($q) => $q->where('students.status', 'active'),
+            'students as active_students' => fn ($q) => $q->where('students.status', 'active'),
         ])
             ->orderByDesc('active_students')
             ->get()
-            ->map(fn($b) => [
+            ->map(fn ($b) => [
                 'batch_name' => $b->name,
                 'status' => $b->status,
                 'total_students' => $b->total_students,
@@ -118,7 +116,7 @@ class ReportController extends Controller
 
         // Students added per month this year
         $newStudentsMonthly = Student::selectRaw(
-            "EXTRACT(MONTH FROM created_at)::int as month, COUNT(*) as count"
+            'EXTRACT(MONTH FROM created_at)::int as month, COUNT(*) as count'
         )
             ->whereYear('created_at', $year)
             ->groupByRaw('EXTRACT(MONTH FROM created_at)')

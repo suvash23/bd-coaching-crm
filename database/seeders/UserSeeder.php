@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Organization;
+use App\Models\Package;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -38,7 +39,20 @@ class UserSeeder extends Seeder
             'timezone' => 'Asia/Dhaka',
         ]);
 
+        if (class_exists(Package::class)) {
+            $basic = Package::where('slug', 'basic')->first();
+            $unlimited = Package::where('slug', 'unlimited')->first();
+
+            if ($basic) {
+                $acme->subscriptions()->create(['package_id' => $basic->id, 'status' => 'active', 'starts_at' => now(), 'expires_at' => now()->addYear()]);
+            }
+            if ($unlimited) {
+                $sunrise->subscriptions()->create(['package_id' => $unlimited->id, 'status' => 'active', 'starts_at' => now()]);
+            }
+        }
+
         $users = [
+            ['organization_id' => null, 'name' => 'Super Admin', 'email' => 'superadmin@bdcoachingcrm.com', 'role' => 'superadmin'],
             ['organization_id' => $acme->id, 'name' => 'Initial Admin', 'email' => 'admin@bdcoachingcrm.com', 'role' => 'admin'],
             ['organization_id' => $acme->id, 'name' => 'Demo Teacher', 'email' => 'teacher@bdcoachingcrm.com', 'role' => 'teacher'],
             ['organization_id' => $acme->id, 'name' => 'Farzana Akter', 'email' => 'farzana.akter@acmecoaching.com', 'role' => 'teacher'],
@@ -62,7 +76,7 @@ class UserSeeder extends Seeder
         $this->command->table(
             ['Organization', 'Name', 'Email', 'Role'],
             collect($users)->map(fn (array $user) => [
-                $user['organization_id'] === $acme->id ? $acme->name : $sunrise->name,
+                $user['organization_id'] ? ($user['organization_id'] === $acme->id ? $acme->name : $sunrise->name) : '--- Global ---',
                 $user['name'],
                 $user['email'],
                 $user['role'],

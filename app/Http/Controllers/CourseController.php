@@ -13,7 +13,7 @@ class CourseController extends Controller
         $courses = Course::latest()->get();
 
         return Inertia::render('Courses/Index', [
-            'courses' => $courses
+            'courses' => $courses,
         ]);
     }
 

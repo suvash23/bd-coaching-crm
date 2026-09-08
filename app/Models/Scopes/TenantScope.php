@@ -14,8 +14,19 @@ class TenantScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        if (Auth::hasUser() && Auth::user()->organization_id) {
-            $builder->where($model->getTable() . '.organization_id', Auth::user()->organization_id);
+        if (! Auth::hasUser()) {
+            return;
+        }
+
+        $user = Auth::user();
+
+        // Superadmins have a global view — no tenant scope applied.
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+
+        if ($user->organization_id) {
+            $builder->where($model->getTable().'.organization_id', $user->organization_id);
         }
     }
 }

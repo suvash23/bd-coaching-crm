@@ -40,7 +40,7 @@ class PaymentController extends Controller
         $payment->load(['invoice.student', 'invoice.course', 'processor', 'organization']);
 
         return Inertia::render('Financials/Receipt', [
-            'payment' => $payment
+            'payment' => $payment,
         ]);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Broadcast;
 use App\Models\Batch;
+use App\Models\Broadcast;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -63,6 +63,6 @@ class BroadcastController extends Controller
             'sent_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Broadcast sent successfully to ' . $recipientsCount . ' recipients.');
+        return redirect()->back()->with('success', 'Broadcast sent successfully to '.$recipientsCount.' recipients.');
     }
 }

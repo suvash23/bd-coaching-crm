@@ -7,9 +7,9 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable(['name', 'email', 'password', 'organization_id', 'role'])]
 #[Hidden(['password', 'remember_token'])]
@@ -21,6 +21,16 @@ class User extends Authenticatable
     public function organization()
     {
         return $this->belongsTo(Organization::class);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array($this->role, ['admin', 'superadmin']);
     }
 
     /**

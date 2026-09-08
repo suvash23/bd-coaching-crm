@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
@@ -16,7 +15,7 @@ class InvoiceController extends Controller
             ->get();
 
         return Inertia::render('Financials/Index', [
-            'invoices' => $invoices
+            'invoices' => $invoices,
         ]);
     }
 }

@@ -20,10 +20,10 @@ class AttendanceController extends Controller
             Attendance::updateOrCreate(
                 [
                     'class_session_id' => $classSession->id,
-                    'student_id' => $data['student_id']
+                    'student_id' => $data['student_id'],
                 ],
                 [
-                    'status' => $data['status']
+                    'status' => $data['status'],
                 ]
             );
         }

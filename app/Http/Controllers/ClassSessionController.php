@@ -3,16 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassSession;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Artisan;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Inertia\Inertia;
 
 class ClassSessionController extends Controller
 {
     public function generate()
     {
         Artisan::call('classes:generate');
+
         return redirect()->back()->with('success', 'Today\'s missing classes have been generated successfully.');
     }
 
@@ -66,6 +67,7 @@ class ClassSessionController extends Controller
         // Map enrolled batch students to their current attendance
         $students = $classSession->batch->students->map(function ($student) use ($classSession) {
             $attendance = $classSession->attendances->where('student_id', $student->id)->first();
+
             return [
                 'id' => $student->id,
                 'name' => $student->name,
