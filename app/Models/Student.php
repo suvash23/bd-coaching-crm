@@ -13,18 +13,7 @@ class Student extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'organization_id',
-        'name',
-        'phone',
-        'email',
-        'guardian_name',
-        'guardian_phone',
-        'guardian_email',
-        'student_id_number',
-        'status',
-        'photo_path',
-    ];
+    protected $guarded = ['id'];
 
     public function organization()
     {

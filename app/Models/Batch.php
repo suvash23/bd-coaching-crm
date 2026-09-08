@@ -13,13 +13,7 @@ class Batch extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'organization_id',
-        'course_id',
-        'name',
-        'capacity',
-        'status',
-    ];
+    protected $guarded = ['id'];
 
     public function organization()
     {

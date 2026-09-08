@@ -13,15 +13,7 @@ class Payment extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'organization_id',
-        'invoice_id',
-        'processed_by',
-        'amount',
-        'method',
-        'transaction_id',
-        'payment_date',
-    ];
+    protected $guarded = ['id'];
 
     public function organization()
     {

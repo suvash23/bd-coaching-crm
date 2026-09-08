@@ -10,17 +10,7 @@ class Organization extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'name',
-        'status',
-        'domain',
-        'short_code',
-        'logo_path',
-        'phone',
-        'email',
-        'address',
-        'timezone',
-    ];
+    protected $guarded = ['id'];
 
     public function users()
     {
