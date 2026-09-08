@@ -17,8 +17,8 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::withoutGlobalScopes()->delete();
-        Organization::withoutGlobalScopes()->delete();
+        User::withoutGlobalScopes()->forceDelete();
+        Organization::withoutGlobalScopes()->forceDelete();
 
         $acme = Organization::create([
             'name' => 'Acme Coaching Center',

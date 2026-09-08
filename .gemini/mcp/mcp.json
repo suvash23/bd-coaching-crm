@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/usr/local/Cellar/php/8.5.9/bin/php",
+            "args": [
+                "/Users/smronju/Sites/bd-coaching-crm/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}
