@@ -2,7 +2,9 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import { Head, Link } from '@inertiajs/react';
 import React from 'react';
 
-export default function Welcome({ auth }) {
+export default function Welcome({ auth, packages }) {
+    const money = (value) => `৳${Number(value || 0).toLocaleString()}`;
+
     return (
         <div className="min-h-screen bg-slate-900 font-sans text-slate-100 overflow-hidden relative">
             <Head title="Welcome | Next-Gen Coaching CRM" />
@@ -27,6 +29,7 @@ export default function Welcome({ auth }) {
                             </Link>
                         ) : (
                             <>
+                                <a href="#pricing" className="px-4 py-2 text-slate-300 hover:text-white transition-colors font-medium hidden sm:inline-block">Pricing</a>
                                 <Link href={route('login')} className="px-4 py-2 text-slate-300 hover:text-white transition-colors font-medium">Log in</Link>
                                 <Link href={route('register')} className="px-5 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-white font-medium transition-all backdrop-blur-sm">Register</Link>
                             </>
@@ -98,6 +101,78 @@ export default function Welcome({ auth }) {
                             Never miss a payment again. Auto-generate monthly recurring fees, seamlessly track partial balances, and issue beautiful pristine printable receipts instantly.
                         </p>
                     </div>
+                </div>
+            </section>
+
+            {/* Pricing Section */}
+            <section id="pricing" className="relative z-10 max-w-7xl mx-auto px-6 py-24 border-t border-white/5 mt-12 bg-slate-950/30">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">Simple, Transparent Pricing</h2>
+                    <p className="text-slate-400 max-w-xl mx-auto">Start for free and scale as your coaching center grows. No hidden fees or surprise charges.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {packages && packages.map((pkg) => {
+                        const isPopular = pkg.slug === 'pro';
+                        return (
+                            <div
+                                key={pkg.id}
+                                className={`relative bg-slate-900 rounded-3xl border flex flex-col p-8 shadow-2xl transition-transform hover:-translate-y-2 ${isPopular ? 'border-indigo-500 ring-2 ring-indigo-500/50 shadow-indigo-500/20' : 'border-slate-800'
+                                    }`}
+                            >
+                                {isPopular && (
+                                    <div className="absolute top-0 right-6 -translate-y-1/2">
+                                        <span className="bg-indigo-500 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+                                            Most Popular
+                                        </span>
+                                    </div>
+                                )}
+
+                                <div className="mb-4">
+                                    <h3 className="text-xl font-bold text-white mb-1 capitalize">{pkg.name}</h3>
+                                    <div className="text-slate-400 text-sm">
+                                        {pkg.max_students === null ? 'Unlimited students' : `Up to ${pkg.max_students} students`}
+                                    </div>
+                                </div>
+
+                                <div className="mb-8 flex items-baseline text-white">
+                                    <span className="text-4xl font-extrabold tracking-tight">{money(pkg.price)}</span>
+                                    <span className="ml-1 text-sm font-medium text-slate-500">/mo</span>
+                                </div>
+
+                                <ul className="space-y-4 mb-8 flex-1">
+                                    <li className="flex items-start text-sm text-slate-300">
+                                        <svg className="h-5 w-5 text-emerald-400 shrink-0 mr-3" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span>Unlimited Batches & Courses</span>
+                                    </li>
+                                    <li className="flex items-start text-sm text-slate-300">
+                                        <svg className="h-5 w-5 text-emerald-400 shrink-0 mr-3" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span>Full CRM Features</span>
+                                    </li>
+                                    <li className="flex items-start text-sm text-slate-300">
+                                        <svg className="h-5 w-5 text-emerald-400 shrink-0 mr-3" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span>{pkg.trial_days} days free trial</span>
+                                    </li>
+                                </ul>
+
+                                <Link
+                                    href={route('register')}
+                                    className={`w-full text-center py-3 rounded-xl text-sm font-semibold transition-all shadow-lg ${isPopular
+                                            ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25'
+                                            : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                                        }`}
+                                >
+                                    Get Started
+                                </Link>
+                            </div>
+                        );
+                    })}
                 </div>
             </section>
 

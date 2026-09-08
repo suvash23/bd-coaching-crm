@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 class GenerateClassSessions extends Command
 {
     protected $signature = 'classes:generate {--days=14 : Number of days to generate ahead}';
+
     protected $description = 'Generate individual class sessions from batch schedule rules';
 
     public function handle()
@@ -45,7 +46,7 @@ class GenerateClassSessions extends Command
                             ->where('start_time', $schedule->start_time)
                             ->exists();
 
-                        if (!$exists) {
+                        if (! $exists) {
                             ClassSession::withoutGlobalScopes()->create([
                                 'organization_id' => $batch->organization_id,
                                 'batch_id' => $batch->id,

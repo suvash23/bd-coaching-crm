@@ -1,20 +1,50 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\BatchController;
+use App\Http\Controllers\BroadcastController;
+use App\Http\Controllers\ClassSessionController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\OrganizationSettingsController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ScheduleRuleController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentDiscountController;
+use App\Http\Controllers\SuperAdminDashboardController;
+use App\Http\Controllers\SuperAdminOrganizationController;
+use App\Http\Controllers\SuperAdminPackageController;
+use App\Http\Middleware\SuperAdminMiddleware;
+use App\Models\Package;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
+    $packages = Package::orderBy('price_bdt', 'asc')->get()->map(function ($pkg) {
+        return [
+            'id' => $pkg->id,
+            'name' => $pkg->name,
+            'slug' => $pkg->slug,
+            'price' => $pkg->price_bdt,
+            'max_students' => $pkg->max_students,
+            'trial_days' => $pkg->trial_days,
+        ];
+    });
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'packages' => $packages,
     ]);
 });
 
-Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -23,32 +53,44 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::post('/organization', [\App\Http\Controllers\OrganizationSettingsController::class, 'update'])->name('organization.update');
+    Route::post('/organization', [OrganizationSettingsController::class, 'update'])->name('organization.update');
 
-    Route::resource('courses', \App\Http\Controllers\CourseController::class)->except(['create', 'show', 'edit']);
-    Route::resource('batches', \App\Http\Controllers\BatchController::class)->except(['create', 'show', 'edit']);
-    Route::post('/batches/{batch}/schedule-rules', [\App\Http\Controllers\ScheduleRuleController::class, 'store'])->name('batches.schedule-rules.store');
-    Route::delete('/batches/{batch}/schedule-rules/{scheduleRule}', [\App\Http\Controllers\ScheduleRuleController::class, 'destroy'])->name('batches.schedule-rules.destroy');
-    Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['create', 'show', 'edit']);
-    Route::post('/students/{student}/discounts', [\App\Http\Controllers\StudentDiscountController::class, 'store'])->name('students.discounts.store');
-    Route::delete('/students/{student}/discounts/{discount}', [\App\Http\Controllers\StudentDiscountController::class, 'destroy'])->name('students.discounts.destroy');
+    Route::resource('courses', CourseController::class)->except(['create', 'show', 'edit']);
+    Route::resource('batches', BatchController::class)->except(['create', 'show', 'edit']);
+    Route::post('/batches/{batch}/schedule-rules', [ScheduleRuleController::class, 'store'])->name('batches.schedule-rules.store');
+    Route::delete('/batches/{batch}/schedule-rules/{scheduleRule}', [ScheduleRuleController::class, 'destroy'])->name('batches.schedule-rules.destroy');
+    Route::resource('students', StudentController::class)->except(['create', 'show', 'edit']);
+    Route::post('/students/{student}/discounts', [StudentDiscountController::class, 'store'])->name('students.discounts.store');
+    Route::delete('/students/{student}/discounts/{discount}', [StudentDiscountController::class, 'destroy'])->name('students.discounts.destroy');
 
     // Class Sessions and Attendance
-    Route::post('/classes/generate', [\App\Http\Controllers\ClassSessionController::class, 'generate'])->name('classes.generate');
-    Route::get('/classes', [\App\Http\Controllers\ClassSessionController::class, 'index'])->name('classes.index');
-    Route::get('/classes/{classSession}', [\App\Http\Controllers\ClassSessionController::class, 'show'])->name('classes.show');
-    Route::put('/classes/{classSession}/attendance', [\App\Http\Controllers\AttendanceController::class, 'update'])->name('classes.attendance.update');
+    Route::post('/classes/generate', [ClassSessionController::class, 'generate'])->name('classes.generate');
+    Route::get('/classes', [ClassSessionController::class, 'index'])->name('classes.index');
+    Route::get('/classes/{classSession}', [ClassSessionController::class, 'show'])->name('classes.show');
+    Route::put('/classes/{classSession}/attendance', [AttendanceController::class, 'update'])->name('classes.attendance.update');
 
     // Financials
-    Route::get('/invoices', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.index');
-    Route::post('/invoices/{invoice}/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('invoices.payments.store');
-    Route::get('/payments/{payment}/receipt', [\App\Http\Controllers\PaymentController::class, 'show'])->name('payments.receipt');
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::post('/invoices/{invoice}/payments', [PaymentController::class, 'store'])->name('invoices.payments.store');
+    Route::get('/payments/{payment}/receipt', [PaymentController::class, 'show'])->name('payments.receipt');
     // Reports
-    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     // Broadcasts
-    Route::get('/broadcasts', [\App\Http\Controllers\BroadcastController::class, 'index'])->name('broadcasts.index');
-    Route::post('/broadcasts', [\App\Http\Controllers\BroadcastController::class, 'store'])->name('broadcasts.store');
+    Route::get('/broadcasts', [BroadcastController::class, 'index'])->name('broadcasts.index');
+    Route::post('/broadcasts', [BroadcastController::class, 'store'])->name('broadcasts.store');
 });
 
-require __DIR__ . '/auth.php';
+// Superadmin Routes
+Route::middleware(['auth', SuperAdminMiddleware::class])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Coaching List (Organizations)
+    Route::get('/organizations', [SuperAdminOrganizationController::class, 'index'])->name('organizations.index');
+    Route::post('/organizations/{organization}/status', [SuperAdminOrganizationController::class, 'updateStatus'])->name('organizations.update-status');
+
+    // Packages
+    Route::get('/packages', [SuperAdminPackageController::class, 'index'])->name('packages.index');
+});
+
+require __DIR__.'/auth.php';

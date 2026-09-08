@@ -2,8 +2,10 @@
 
 use App\Models\Course;
 use App\Models\Organization;
+use App\Models\Package;
 use App\Models\Student;
 use App\Models\StudentDiscount;
+use App\Models\Subscription;
 use App\Models\User;
 
 test('authenticated user can view students page', function () {
@@ -16,8 +18,10 @@ test('authenticated user can view students page', function () {
     $response->assertOk();
 });
 
-test('user can create a student', function () {
+test('user can create a student when under the plan limit', function () {
     $org = Organization::create(['name' => 'Test Org']);
+    $package = Package::factory()->create(['max_students' => 100]);
+    Subscription::factory()->create(['organization_id' => $org->id, 'package_id' => $package->id]);
     $user = User::factory()->create(['organization_id' => $org->id]);
 
     $response = $this
@@ -36,6 +40,41 @@ test('user can create a student', function () {
         'email' => 'john@example.com',
         'organization_id' => $org->id,
     ]);
+});
+
+test('student creation is blocked when plan student limit is reached', function () {
+    $org = Organization::create(['name' => 'Limit Org']);
+    $package = Package::factory()->create(['max_students' => 2]);
+    Subscription::factory()->create(['organization_id' => $org->id, 'package_id' => $package->id]);
+    $user = User::factory()->create(['organization_id' => $org->id]);
+
+    // Fill up the limit
+    Student::factory()->count(2)->create(['organization_id' => $org->id]);
+
+    $response = $this
+        ->actingAs($user)
+        ->post(route('students.store'), [
+            'name' => 'Over Limit Student',
+            'status' => 'active',
+        ]);
+
+    $response->assertSessionHasErrors('limit');
+    $this->assertDatabaseMissing('students', ['name' => 'Over Limit Student']);
+});
+
+test('student creation is blocked when organization has no active subscription', function () {
+    $org = Organization::create(['name' => 'No Sub Org']);
+    $user = User::factory()->create(['organization_id' => $org->id]);
+
+    $response = $this
+        ->actingAs($user)
+        ->post(route('students.store'), [
+            'name' => 'Blocked Student',
+            'status' => 'active',
+        ]);
+
+    $response->assertSessionHasErrors('limit');
+    $this->assertDatabaseMissing('students', ['name' => 'Blocked Student']);
 });
 
 test('user can update a student', function () {

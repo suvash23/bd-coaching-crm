@@ -5,12 +5,14 @@ namespace App\Console\Commands;
 use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Invoice;
+use App\Models\StudentDiscount;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class GenerateMonthlyFees extends Command
 {
     protected $signature = 'fees:generate-monthly';
+
     protected $description = 'Generate monthly invoices for active students enrolled in monthly-fee courses.';
 
     public function handle()
@@ -36,7 +38,7 @@ class GenerateMonthlyFees extends Command
                     'students' => function ($query) {
                         // We only want to bill active students
                         $query->where('students.status', 'active');
-                    }
+                    },
                 ])
                 ->get();
 
@@ -50,13 +52,13 @@ class GenerateMonthlyFees extends Command
                         ->where('billing_month', $billingMonth)
                         ->exists();
 
-                    if (!$exists) {
+                    if (! $exists) {
                         $billingMonthDate = Carbon::createFromFormat('Y-m', $billingMonth)->startOfMonth();
                         $originalAmount = $course->amount;
                         $finalAmount = $originalAmount;
                         $discountAmount = 0;
 
-                        $activeDiscount = \App\Models\StudentDiscount::withoutGlobalScopes()
+                        $activeDiscount = StudentDiscount::withoutGlobalScopes()
                             ->where('student_id', $student->id)
                             ->where(function ($query) use ($course) {
                                 $query->where('course_id', $course->id)->orWhereNull('course_id');

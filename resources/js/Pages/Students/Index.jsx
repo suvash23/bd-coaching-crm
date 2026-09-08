@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, router, usePage } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import InputError from '@/Components/InputError';
 import DiscountModal from './DiscountModal';
@@ -166,8 +166,67 @@ const EmptyState = () => (
     </div>
 );
 
-export default function Index({ students, batches, courses, filters, organization }) {
+// ── Plan Quota Bar ─────────────────────────────────────────────────────────────
+const PlanQuotaBar = ({ quota }) => {
+    if (!quota) return null;
+    const { current, max, plan, can_add } = quota;
+    const isUnlimited = max === null;
+    const pct = isUnlimited ? 0 : Math.min(100, Math.round((current / max) * 100));
+    const barColor = pct >= 100 ? 'bg-rose-500' : pct >= 80 ? 'bg-amber-400' : 'bg-emerald-500';
+    const textColor = pct >= 100 ? 'text-rose-600' : pct >= 80 ? 'text-amber-600' : 'text-emerald-600';
+    const bgColor = pct >= 100 ? 'bg-rose-50 border-rose-200' : pct >= 80 ? 'bg-amber-50 border-amber-200' : 'bg-white border-gray-200';
+
+    return (
+        <div className={`flex items-center gap-4 px-4 py-3 rounded-xl border ${bgColor} shadow-sm`}>
+            {/* Plan badge */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+                <svg className={`w-4 h-4 ${textColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <span className={`text-xs font-bold uppercase tracking-wide ${textColor}`}>{plan}</span>
+            </div>
+
+            {/* Divider */}
+            <div className="w-px h-5 bg-gray-200 flex-shrink-0" />
+
+            {isUnlimited ? (
+                <span className="text-xs text-emerald-600 font-medium">Unlimited students</span>
+            ) : (
+                <>
+                    {/* Bar */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs text-gray-500">
+                                <span className={`font-semibold ${textColor}`}>{current}</span>
+                                <span className="text-gray-400"> / {max} students</span>
+                            </span>
+                            <span className={`text-xs font-semibold ${textColor}`}>{pct}%</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                                className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+                                style={{ width: `${pct}%` }}
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* Upgrade CTA when at limit */}
+            {!can_add && !isUnlimited && (
+                <>
+                    <div className="w-px h-5 bg-rose-200 flex-shrink-0" />
+                    <span className="text-xs font-semibold text-rose-600 whitespace-nowrap">Limit reached — upgrade your plan</span>
+                </>
+            )}
+        </div>
+    );
+};
+
+
+export default function Index({ students, batches, courses, filters, organization, studentQuota }) {
     const savedView = typeof window !== 'undefined' ? (localStorage.getItem('students_view') ?? 'card') : 'card';
+
     const [viewMode, setViewMode] = useState(savedView);
     const switchView = (mode) => { setViewMode(mode); localStorage.setItem('students_view', mode); };
 
@@ -218,11 +277,13 @@ export default function Index({ students, batches, courses, filters, organizatio
     const handleDelete = (student) => { if (confirm(`Delete ${student.name}? This cannot be undone.`)) router.delete(route('students.destroy', student.id)); };
     const toggleBatch = (id) => setData('batch_ids', data.batch_ids.includes(id) ? data.batch_ids.filter(x => x !== id) : [...data.batch_ids, id]);
 
+    const { errors: pageErrors } = usePage().props;
+
     return (
         <AuthenticatedLayout header={<h2 className="text-lg font-semibold text-gray-800">Students</h2>}>
             <Head title="Students" />
 
-            <div className="space-y-6">
+            <div className="space-y-4">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <div>
@@ -256,12 +317,33 @@ export default function Index({ students, batches, courses, filters, organizatio
                                 <ListIcon />
                             </button>
                         </div>
-                        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm transition-all shadow-sm">
+                        <button
+                            onClick={studentQuota?.can_add !== false ? openCreate : undefined}
+                            disabled={studentQuota?.can_add === false}
+                            title={studentQuota?.can_add === false ? 'Student limit reached — upgrade your plan' : 'Add Student'}
+                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all shadow-sm
+                                ${studentQuota?.can_add === false
+                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
+                        >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
                             Add Student
                         </button>
                     </div>
                 </div>
+
+                {/* Plan Quota Bar */}
+                <PlanQuotaBar quota={studentQuota} />
+
+                {/* Limit-reached server error (fallback) */}
+                {pageErrors?.limit && (
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm">
+                        <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                        </svg>
+                        <span>{pageErrors.limit}</span>
+                    </div>
+                )}
 
                 {/* Student list/cards */}
                 {students.length === 0 ? <EmptyState /> : viewMode === 'card' ? (

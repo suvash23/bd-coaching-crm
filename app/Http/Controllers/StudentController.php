@@ -40,12 +40,21 @@ class StudentController extends Controller
             $organization->logo_url = asset('storage/'.$organization->logo_path);
         }
 
+        $activeSubscription = $organization?->activeSubscription()->with('package')->first();
+        $studentQuota = [
+            'current' => $organization?->activeStudentCount() ?? 0,
+            'max' => $activeSubscription?->package?->max_students,  // null = unlimited
+            'plan' => $activeSubscription?->package?->name ?? 'No Plan',
+            'can_add' => $organization?->canAddStudent() ?? false,
+        ];
+
         return Inertia::render('Students/Index', [
             'students' => $students,
             'batches' => $batches,
             'courses' => $courses,
             'filters' => ['search' => $search],
             'organization' => $organization,
+            'studentQuota' => $studentQuota,
         ]);
     }
 
@@ -54,6 +63,17 @@ class StudentController extends Controller
         $validated = $request->validated();
 
         $organization = $request->user()->organization;
+
+        if (! $organization->canAddStudent()) {
+            $subscription = $organization->activeSubscription;
+            $limit = $subscription?->package?->max_students ?? 0;
+            $plan = $subscription?->package?->name ?? 'current plan';
+
+            return redirect()->back()->withErrors([
+                'limit' => "Student limit reached. Your {$plan} allows up to {$limit} students. Please upgrade your plan.",
+            ]);
+        }
+
         $validated['organization_id'] = $organization->id;
 
         if (empty($validated['student_id_number'])) {
