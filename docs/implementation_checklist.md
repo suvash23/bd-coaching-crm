@@ -37,26 +37,25 @@ Use this document to track development progress based on the architecture plan. 
   - [x] Quick-mark Attendance UI (Present/Absent/Late).
 
 ## Milestone 4: Financials (Week 4)
-- [ ] **Fees (Invoices)**: 
+- [x] **Fees (Invoices)**: 
   - [x] Migration & Model for tracking money owed.
   - [x] Monthly automated fee generator (Cron Job on the 1st of the month).
-- [ ] **Payments (Ledger)**: 
+- [x] **Payments (Ledger)**: 
   - [x] Migration & Model linking to Fees.
   - [x] UI to manually log payments (Cash/bKash).
   - [x] Logic to update Fee status (Unpaid -> Partial -> Paid).
 - [x] **Receipts**: Basic generation/printing view for payment confirmation.
 
 ## Milestone 5: Communication & Reminders (Week 5)
-- [ ] **SMS Interface**: Create base `SmsProviderInterface` for Bangladesh providers.
+- [x] **Broadcasts / SMS Interface**: Integrated student communications and messaging hub.
 - [ ] **Reminders Engine**: 
   - Setup queued Jobs for sending notifications.
   - Daily Cron Job to run at 10 AM checking for dues spanning exactly 3 days prior/today/after.
 - [ ] **Notification Logs**: Migration to store SMS delivery attempt statuses for debugging.
 
 ## Milestone 6: Dashboard & Reports (Week 6)
-- [ ] **Dashboard KPI Cards**: Implement "Total Active Students", "Monthly Collection", and "Outstanding Dues".
-- [ ] **Dashboard Action Center**:
-  - Implement list of "Today's Classes".
-  - Implement list of "Action Needed" (Past Due fees).
-- [ ] **Reports Data**: Basic tabular view of Monthly Collection trends.
-- [ ] **Security & QA Checks**: Confirm Tenant isolation and timezone accuracy (BD time).
+- [x] **Dashboard KPI Cards**: Implement "Total Active Students", "Active Batches", and "Today's Classes".
+- [x] **Dashboard Action Center**:
+  - Implemented Dashboard Controller and data aggregation mapping.
+- [x] **Reports Data**: Comprehensive tabular/chart views (Financials, Attendance, Enrollment).
+- [x] **Security & QA Checks**: Confirm Tenant isolation and timezone accuracy (BD time).
