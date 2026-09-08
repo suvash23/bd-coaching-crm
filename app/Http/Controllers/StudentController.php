@@ -20,9 +20,9 @@ class StudentController extends Controller
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'ilike', '%'.$search.'%')
-                    ->orWhere('student_id_number', 'ilike', '%'.$search.'%')
-                    ->orWhere('phone', 'ilike', '%'.$search.'%');
+                $q->whereLike('name', '%'.$search.'%')
+                    ->orWhereLike('student_id_number', '%'.$search.'%')
+                    ->orWhereLike('phone', '%'.$search.'%');
             });
         }
 
