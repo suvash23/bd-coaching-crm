@@ -57,11 +57,7 @@ export default function AuthenticatedLayout({ header, children }) {
             <aside className="hidden md:flex flex-col w-60 bg-white border-r border-gray-200 fixed inset-y-0 z-10 shadow-sm">
                 {/* Logo */}
                 <div className="flex items-center gap-3 h-16 px-5 border-b border-gray-100 flex-shrink-0">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-500 flex items-center justify-center shadow-sm">
-                        <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                    </div>
+                    <ApplicationLogo className="w-8 h-8 rounded-lg shadow-sm" />
                     <div>
                         <span className="text-sm font-bold text-gray-900">Coaching<span className="text-indigo-600">CRM</span></span>
                     </div>
