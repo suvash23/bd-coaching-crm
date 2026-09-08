@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileDestroyRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +21,7 @@ class ProfileController extends Controller
     {
         $organization = $request->user()->organization;
         if ($organization && $organization->logo_path) {
-            $organization->logo_url = asset('storage/' . $organization->logo_path);
+            $organization->logo_url = asset('storage/'.$organization->logo_path);
         }
 
         return Inertia::render('Profile/Edit', [
@@ -49,12 +50,8 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(ProfileDestroyRequest $request): RedirectResponse
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
 
         Auth::logout();

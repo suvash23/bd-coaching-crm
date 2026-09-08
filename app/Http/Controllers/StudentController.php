@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudentRequest;
 use App\Models\Batch;
+use App\Models\Course;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -18,23 +20,24 @@ class StudentController extends Controller
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'ilike', '%' . $search . '%')
-                    ->orWhere('student_id_number', 'ilike', '%' . $search . '%')
-                    ->orWhere('phone', 'ilike', '%' . $search . '%');
+                $q->where('name', 'ilike', '%'.$search.'%')
+                    ->orWhere('student_id_number', 'ilike', '%'.$search.'%')
+                    ->orWhere('phone', 'ilike', '%'.$search.'%');
             });
         }
 
         $students = $query->get()->map(function ($student) {
-            $student->photo_url = $student->photo_path ? asset('storage/' . $student->photo_path) : null;
+            $student->photo_url = $student->photo_path ? asset('storage/'.$student->photo_path) : null;
+
             return $student;
         });
 
         $batches = Batch::where('status', 'active')->latest()->get(['id', 'name']);
-        $courses = \App\Models\Course::latest()->get(['id', 'name']);
+        $courses = Course::latest()->get(['id', 'name']);
 
         $organization = $request->user()->organization;
         if ($organization && $organization->logo_path) {
-            $organization->logo_url = asset('storage/' . $organization->logo_path);
+            $organization->logo_url = asset('storage/'.$organization->logo_path);
         }
 
         return Inertia::render('Students/Index', [
@@ -46,21 +49,9 @@ class StudentController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StudentRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'guardian_name' => 'nullable|string|max:255',
-            'guardian_phone' => 'nullable|string|max:20',
-            'guardian_email' => 'nullable|email|max:255',
-            'student_id_number' => 'nullable|string|max:255',
-            'status' => 'required|in:active,inactive',
-            'batch_ids' => 'nullable|array',
-            'batch_ids.*' => 'exists:batches,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
+        $validated = $request->validated();
 
         $organization = $request->user()->organization;
         $validated['organization_id'] = $organization->id;
@@ -84,7 +75,7 @@ class StudentController extends Controller
 
             // Get last student ID for this org to generate sequence
             $lastStudent = Student::withTrashed()->where('organization_id', $organization->id)
-                ->where('student_id_number', 'like', $prefix . '-%')
+                ->where('student_id_number', 'like', $prefix.'-%')
                 ->orderBy('id', 'desc')->first();
 
             $sequence = 1;
@@ -95,7 +86,7 @@ class StudentController extends Controller
                 }
             }
 
-            $validated['student_id_number'] = $prefix . '-' . date('y') . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+            $validated['student_id_number'] = $prefix.'-'.date('y').str_pad($sequence, 4, '0', STR_PAD_LEFT);
         }
 
         if ($request->hasFile('photo')) {
@@ -104,7 +95,7 @@ class StudentController extends Controller
 
         $student = Student::create($validated);
 
-        if (!empty($validated['batch_ids'])) {
+        if (! empty($validated['batch_ids'])) {
             $syncData = [];
             foreach ($validated['batch_ids'] as $batch_id) {
                 $syncData[$batch_id] = ['join_date' => now()->toDateString(), 'status' => 'active'];
@@ -115,21 +106,9 @@ class StudentController extends Controller
         return redirect()->back()->with('success', 'Student created successfully.');
     }
 
-    public function update(Request $request, Student $student)
+    public function update(StudentRequest $request, Student $student)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'guardian_name' => 'nullable|string|max:255',
-            'guardian_phone' => 'nullable|string|max:20',
-            'guardian_email' => 'nullable|email|max:255',
-            'student_id_number' => 'nullable|string|max:255',
-            'status' => 'required|in:active,inactive',
-            'batch_ids' => 'nullable|array',
-            'batch_ids.*' => 'exists:batches,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('photo')) {
             // Delete old photo if exists

@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\OrganizationSettingsRequest;
 use Illuminate\Support\Facades\Storage;
 
 class OrganizationSettingsController extends Controller
 {
-    public function update(Request $request)
+    public function update(OrganizationSettingsRequest $request)
     {
         $organization = $request->user()->organization;
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'short_code' => 'nullable|string|max:10',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
+        $validated = $request->validated();
 
         $organization->name = $validated['name'];
         $organization->short_code = $validated['short_code'];

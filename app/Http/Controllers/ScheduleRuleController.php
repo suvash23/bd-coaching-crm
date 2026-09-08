@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ScheduleRuleRequest;
 use App\Models\Batch;
 use App\Models\ScheduleRule;
-use Illuminate\Http\Request;
 
 class ScheduleRuleController extends Controller
 {
-    public function store(Request $request, Batch $batch)
+    public function store(ScheduleRuleRequest $request, Batch $batch)
     {
-        $validated = $request->validate([
-            'day_of_week' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
-        ]);
+        $validated = $request->validated();
 
         // Prevent duplicate rules for the same day+time slot
         $exists = $batch->scheduleRules()
