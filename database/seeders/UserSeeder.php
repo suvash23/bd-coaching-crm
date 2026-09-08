@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
 
         $acme = Organization::create([
             'name' => 'Acme Coaching Center',
+            'short_code' => 'ACME',
             'phone' => '01700000000',
             'email' => 'contact@acmecoaching.com',
             'address' => 'Dhanmondi, Dhaka, Bangladesh',
@@ -30,6 +31,7 @@ class UserSeeder extends Seeder
 
         $sunrise = Organization::create([
             'name' => 'Sunrise Tutorial Home',
+            'short_code' => 'SUNR',
             'phone' => '01800000000',
             'email' => 'contact@sunrisetutorial.com',
             'address' => 'Panchlaish, Chattogram, Bangladesh',

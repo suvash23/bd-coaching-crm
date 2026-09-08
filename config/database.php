@@ -57,6 +57,10 @@ return [
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
+            // Fixed offset rather than the named 'Asia/Dhaka' zone: Bangladesh has no DST, and a
+            // named zone would fail to connect on any MySQL server without its timezone tables
+            // loaded (mysql_tzinfo_to_sql), which most default installs don't have.
+            'timezone' => env('DB_TIMEZONE', '+06:00'),
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
