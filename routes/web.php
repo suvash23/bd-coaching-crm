@@ -17,6 +17,8 @@ use App\Http\Controllers\StudentDiscountController;
 use App\Http\Controllers\SuperAdminDashboardController;
 use App\Http\Controllers\SuperAdminOrganizationController;
 use App\Http\Controllers\SuperAdminPackageController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\SuperAdminMiddleware;
 use App\Models\Package;
 use Illuminate\Foundation\Application;
@@ -62,6 +64,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('students', StudentController::class)->except(['create', 'show', 'edit']);
     Route::post('/students/{student}/discounts', [StudentDiscountController::class, 'store'])->name('students.discounts.store');
     Route::delete('/students/{student}/discounts/{discount}', [StudentDiscountController::class, 'destroy'])->name('students.discounts.destroy');
+
+    // Staff (Teachers) — organization admins only
+    Route::middleware(AdminMiddleware::class)->group(function () {
+        Route::resource('teachers', TeacherController::class)->except(['create', 'show', 'edit']);
+    });
 
     // Class Sessions and Attendance
     Route::post('/classes/generate', [ClassSessionController::class, 'generate'])->name('classes.generate');
