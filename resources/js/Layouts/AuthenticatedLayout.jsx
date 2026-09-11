@@ -64,6 +64,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
     const regularNav = [
         { name: 'Dashboard', href: route('dashboard'), active: route().current('dashboard') },
+        { name: 'Plans', href: route('plan'), active: route().current('plan') },
         { name: 'Schedule / Classes', href: route('classes.index'), active: route().current('classes.*') },
         { name: 'Students', href: route('students.index'), active: route().current('students.*') },
         { name: 'Courses', href: route('courses.index'), active: route().current('courses.*') },

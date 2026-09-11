@@ -94,4 +94,40 @@ class DashboardController extends Controller
             'recentStudents' => $recentStudents,
         ]);
     }
+
+    public function plan()
+    {
+        $user = auth()->user();
+        $organization = $user->organization;
+
+        // Get the organization's current active subscription
+        $currentSubscription = $organization->activeSubscription;
+        $currentPackage = null;
+        $currentPlanName = null;
+
+        if ($currentSubscription) {
+            $currentPackage = $currentSubscription->package;
+            $currentPlanName = $currentPackage?->name;
+        }
+
+        // Get all available packages
+        $packages = Package::orderBy('price_bdt', 'asc')->get()->map(function ($pkg) {
+            return [
+                'id' => $pkg->id,
+                'name' => $pkg->name,
+                'slug' => $pkg->slug,
+                'price' => $pkg->price_bdt,
+                'max_students' => $pkg->max_students,
+                'trial_days' => $pkg->trial_days,
+                'is_active' => $pkg->is_active,
+            ];
+        });
+
+        return Inertia::render('Coaching/Plan/Index', [
+            'currentPackage' => $currentPackage,
+            'currentPlanName' => $currentPlanName,
+            'packages' => $packages,
+            'user' => $user,
+        ]);
+    }
 }

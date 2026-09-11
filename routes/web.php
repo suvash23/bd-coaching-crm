@@ -57,6 +57,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/organization', [OrganizationSettingsController::class, 'update'])->name('organization.update');
 
+    // Coaching Plan
+    Route::get('/plan', [DashboardController::class, 'plan'])
+        ->middleware('auth')
+        ->name('plan');
+
     Route::resource('courses', CourseController::class)->except(['create', 'show', 'edit']);
     Route::resource('batches', BatchController::class)->except(['create', 'show', 'edit']);
     Route::post('/batches/{batch}/schedule-rules', [ScheduleRuleController::class, 'store'])->name('batches.schedule-rules.store');
