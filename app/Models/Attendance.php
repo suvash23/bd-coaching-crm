@@ -9,11 +9,7 @@ class Attendance extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'class_session_id',
-        'student_id',
-        'status',
-    ];
+    protected $guarded = ['id'];
 
     public function classSession()
     {

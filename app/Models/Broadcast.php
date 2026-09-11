@@ -9,16 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 #[ScopedBy([TenantScope::class])]
 class Broadcast extends Model
 {
-    protected $fillable = [
-        'organization_id',
-        'type',
-        'title',
-        'message',
-        'status',
-        'recipients_count',
-        'target_filters',
-        'sent_at',
-    ];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'target_filters' => 'array',

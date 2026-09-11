@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BatchRequest;
 use App\Models\Batch;
 use App\Models\Course;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BatchController extends Controller
@@ -21,15 +21,9 @@ class BatchController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(BatchRequest $request)
     {
-        $validated = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'name' => 'required|string|max:255',
-            'capacity' => 'required|integer|min:1|max:1000',
-            'status' => 'required|in:active,inactive',
-        ]);
-
+        $validated = $request->validated();
         $validated['organization_id'] = $request->user()->organization_id;
 
         Batch::create($validated);
@@ -37,16 +31,9 @@ class BatchController extends Controller
         return redirect()->back()->with('success', 'Batch created successfully.');
     }
 
-    public function update(Request $request, Batch $batch)
+    public function update(BatchRequest $request, Batch $batch)
     {
-        $validated = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'name' => 'required|string|max:255',
-            'capacity' => 'required|integer|min:1|max:1000',
-            'status' => 'required|in:active,inactive',
-        ]);
-
-        $batch->update($validated);
+        $batch->update($request->validated());
 
         return redirect()->back()->with('success', 'Batch updated successfully.');
     }

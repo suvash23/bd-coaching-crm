@@ -9,14 +9,7 @@ class Package extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'slug',
-        'max_students',
-        'price_bdt',
-        'trial_days',
-        'is_active',
-    ];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'is_active' => 'boolean',

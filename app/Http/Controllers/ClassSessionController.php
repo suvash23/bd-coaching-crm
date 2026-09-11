@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassSession;
+use App\Services\ClassScheduleService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -10,6 +11,8 @@ use Inertia\Inertia;
 
 class ClassSessionController extends Controller
 {
+    public function __construct(private ClassScheduleService $schedule) {}
+
     public function generate()
     {
         Artisan::call('classes:generate');
@@ -20,38 +23,22 @@ class ClassSessionController extends Controller
     public function index(Request $request)
     {
         $view = $request->query('view', 'day'); // 'day' or 'week'
-        $date = $request->query('date', Carbon::today()->toDateString());
-
-        $anchorDate = Carbon::parse($date);
+        $anchorDate = Carbon::parse($request->query('date', Carbon::today()->toDateString()));
 
         if ($view === 'week') {
-            $start = $anchorDate->copy()->startOfWeek(Carbon::MONDAY);
-            $end = $anchorDate->copy()->endOfWeek(Carbon::SUNDAY);
-
-            $classes = ClassSession::with('batch.course')
-                ->whereBetween('scheduled_date', [$start->toDateString(), $end->toDateString()])
-                ->oldest('scheduled_date')
-                ->oldest('start_time')
-                ->get()
-                ->groupBy('scheduled_date'); // keyed by 'YYYY-MM-DD'
+            $week = $this->schedule->forWeek($anchorDate);
 
             return Inertia::render('Classes/Index', [
-                'classes' => $classes,
+                'classes' => $week['classes'],
                 'currentDate' => $anchorDate->toDateString(),
                 'view' => 'week',
-                'weekStart' => $start->toDateString(),
-                'weekEnd' => $end->toDateString(),
+                'weekStart' => $week['weekStart'],
+                'weekEnd' => $week['weekEnd'],
             ]);
         }
 
-        // Daily view (default)
-        $classes = ClassSession::with('batch.course')
-            ->whereDate('scheduled_date', $anchorDate->toDateString())
-            ->oldest('start_time')
-            ->get();
-
         return Inertia::render('Classes/Index', [
-            'classes' => $classes,
+            'classes' => $this->schedule->forDay($anchorDate),
             'currentDate' => $anchorDate->toDateString(),
             'view' => 'day',
             'weekStart' => null,
@@ -62,24 +49,10 @@ class ClassSessionController extends Controller
     public function show($id)
     {
         $classSession = ClassSession::findOrFail($id);
-        $classSession->load(['batch.students', 'attendances.student']);
-
-        // Map enrolled batch students to their current attendance
-        $students = $classSession->batch->students->map(function ($student) use ($classSession) {
-            $attendance = $classSession->attendances->where('student_id', $student->id)->first();
-
-            return [
-                'id' => $student->id,
-                'name' => $student->name,
-                'student_id_number' => $student->student_id_number,
-                'status' => $attendance ? $attendance->status : 'present',
-                'recorded' => $attendance ? true : false,
-            ];
-        });
 
         return Inertia::render('Classes/Attendance', [
             'classSession' => $classSession->load('batch.course'),
-            'students' => $students,
+            'students' => $this->schedule->attendanceRoster($classSession),
         ]);
     }
 }

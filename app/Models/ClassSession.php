@@ -13,16 +13,7 @@ class ClassSession extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'organization_id',
-        'batch_id',
-        'teacher_id',
-        'scheduled_date',
-        'start_time',
-        'end_time',
-        'status',
-        'topic',
-    ];
+    protected $guarded = ['id'];
 
     public function organization()
     {

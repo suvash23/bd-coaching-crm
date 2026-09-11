@@ -13,12 +13,7 @@ class Course extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'organization_id',
-        'name',
-        'fee_type',
-        'amount',
-    ];
+    protected $guarded = ['id'];
 
     public function organization()
     {

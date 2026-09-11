@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CourseRequest;
 use App\Models\Course;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CourseController extends Controller
@@ -17,14 +17,9 @@ class CourseController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(CourseRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'fee_type' => 'required|in:monthly,fixed',
-            'amount' => 'required|numeric|min:0',
-        ]);
-
+        $validated = $request->validated();
         $validated['organization_id'] = $request->user()->organization_id;
 
         Course::create($validated);
@@ -32,15 +27,9 @@ class CourseController extends Controller
         return redirect()->back()->with('success', 'Course created successfully.');
     }
 
-    public function update(Request $request, Course $course)
+    public function update(CourseRequest $request, Course $course)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'fee_type' => 'required|in:monthly,fixed',
-            'amount' => 'required|numeric|min:0',
-        ]);
-
-        $course->update($validated);
+        $course->update($request->validated());
 
         return redirect()->back()->with('success', 'Course updated successfully.');
     }

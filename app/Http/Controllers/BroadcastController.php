@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BroadcastRequest;
 use App\Models\Batch;
 use App\Models\Broadcast;
 use App\Models\Student;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BroadcastController extends Controller
@@ -23,16 +23,9 @@ class BroadcastController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(BroadcastRequest $request)
     {
-        $validated = $request->validate([
-            'type' => 'required|in:sms,system,email',
-            'title' => 'nullable|string|max:255',
-            'message' => 'required|string',
-            'target_type' => 'required|in:all,batches',
-            'batch_ids' => 'required_if:target_type,batches|array',
-            'batch_ids.*' => 'exists:batches,id',
-        ]);
+        $validated = $request->validated();
 
         // Calculate recipients
         if ($validated['target_type'] === 'all') {

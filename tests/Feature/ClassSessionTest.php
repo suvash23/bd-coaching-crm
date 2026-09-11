@@ -85,3 +85,40 @@ test('user can record attendance for a class session', function () {
         'status' => 'completed',
     ]);
 });
+
+test('recording attendance rejects an invalid status', function () {
+    $org = Organization::create(['name' => 'Test Org']);
+    $user = User::factory()->create(['organization_id' => $org->id]);
+    $course = Course::create(['organization_id' => $org->id, 'name' => 'Physics', 'fee_type' => 'fixed', 'amount' => 1000]);
+    $batch = Batch::create(['organization_id' => $org->id, 'course_id' => $course->id, 'name' => 'Batch A', 'capacity' => 20, 'status' => 'active']);
+    $student = Student::create(['organization_id' => $org->id, 'name' => 'Student A', 'status' => 'active']);
+    $classSession = ClassSession::create([
+        'organization_id' => $org->id,
+        'batch_id' => $batch->id,
+        'scheduled_date' => now()->toDateString(),
+        'start_time' => '10:00',
+        'end_time' => '11:00',
+        'status' => 'scheduled',
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->put(route('classes.attendance.update', $classSession), [
+            'attendances' => [
+                [
+                    'student_id' => $student->id,
+                    'status' => 'not-a-real-status',
+                ],
+            ],
+        ]);
+
+    $response->assertSessionHasErrors('attendances.0.status');
+    $this->assertDatabaseMissing('attendances', [
+        'class_session_id' => $classSession->id,
+        'student_id' => $student->id,
+    ]);
+    $this->assertDatabaseHas('class_sessions', [
+        'id' => $classSession->id,
+        'status' => 'scheduled',
+    ]);
+});

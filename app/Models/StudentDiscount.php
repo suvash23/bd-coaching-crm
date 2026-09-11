@@ -13,15 +13,7 @@ class StudentDiscount extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'organization_id',
-        'student_id',
-        'course_id',
-        'discount_type',
-        'discount_value',
-        'start_date',
-        'end_date',
-    ];
+    protected $guarded = ['id'];
 
     public function organization()
     {

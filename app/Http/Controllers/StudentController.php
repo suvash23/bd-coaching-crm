@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudentRequest;
 use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Student;
@@ -19,9 +20,9 @@ class StudentController extends Controller
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'ilike', '%'.$search.'%')
-                    ->orWhere('student_id_number', 'ilike', '%'.$search.'%')
-                    ->orWhere('phone', 'ilike', '%'.$search.'%');
+                $q->whereLike('name', '%'.$search.'%')
+                    ->orWhereLike('student_id_number', '%'.$search.'%')
+                    ->orWhereLike('phone', '%'.$search.'%');
             });
         }
 
@@ -57,21 +58,9 @@ class StudentController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StudentRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'guardian_name' => 'nullable|string|max:255',
-            'guardian_phone' => 'nullable|string|max:20',
-            'guardian_email' => 'nullable|email|max:255',
-            'student_id_number' => 'nullable|string|max:255',
-            'status' => 'required|in:active,inactive',
-            'batch_ids' => 'nullable|array',
-            'batch_ids.*' => 'exists:batches,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
+        $validated = $request->validated();
 
         $organization = $request->user()->organization;
 
@@ -137,21 +126,9 @@ class StudentController extends Controller
         return redirect()->back()->with('success', 'Student created successfully.');
     }
 
-    public function update(Request $request, Student $student)
+    public function update(StudentRequest $request, Student $student)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'guardian_name' => 'nullable|string|max:255',
-            'guardian_phone' => 'nullable|string|max:20',
-            'guardian_email' => 'nullable|email|max:255',
-            'student_id_number' => 'nullable|string|max:255',
-            'status' => 'required|in:active,inactive',
-            'batch_ids' => 'nullable|array',
-            'batch_ids.*' => 'exists:batches,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('photo')) {
             // Delete old photo if exists

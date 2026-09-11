@@ -13,16 +13,7 @@ class Invoice extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'organization_id',
-        'student_id',
-        'course_id',
-        'billing_month',
-        'amount',
-        'discount_amount',
-        'status',
-        'due_date',
-    ];
+    protected $guarded = ['id'];
 
     public function organization()
     {

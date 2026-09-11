@@ -2,22 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PaymentRequest;
 use App\Models\Invoice;
 use App\Models\Payment;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PaymentController extends Controller
 {
-    public function store(Request $request, Invoice $invoice)
+    public function store(PaymentRequest $request, Invoice $invoice)
     {
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:1',
-            'method' => 'required|in:cash,bkash,nagad,bank',
-            'transaction_id' => 'nullable|string|max:255',
-            'payment_date' => 'required|date',
-        ]);
-
+        $validated = $request->validated();
         $validated['organization_id'] = $request->user()->organization_id;
         $validated['invoice_id'] = $invoice->id;
         $validated['processed_by'] = $request->user()->id;

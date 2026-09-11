@@ -12,13 +12,7 @@ class ScheduleRule extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'organization_id',
-        'batch_id',
-        'day_of_week',
-        'start_time',
-        'end_time',
-    ];
+    protected $guarded = ['id'];
 
     public function organization()
     {

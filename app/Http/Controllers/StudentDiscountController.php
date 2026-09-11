@@ -2,21 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudentDiscountRequest;
 use App\Models\Student;
 use App\Models\StudentDiscount;
-use Illuminate\Http\Request;
 
 class StudentDiscountController extends Controller
 {
-    public function store(Request $request, Student $student)
+    public function store(StudentDiscountRequest $request, Student $student)
     {
-        $validated = $request->validate([
-            'course_id' => 'nullable|exists:courses,id',
-            'discount_type' => 'required|in:fixed,percentage',
-            'discount_value' => 'required|numeric|min:0',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-        ]);
+        $validated = $request->validated();
 
         $student->discounts()->create([
             'organization_id' => $student->organization_id,
