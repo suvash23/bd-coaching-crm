@@ -1,6 +1,7 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm, router } from '@inertiajs/react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 function StatCard({ label, value, icon, iconBg, iconColor }) {
     return (
@@ -28,7 +29,9 @@ function StatusPill({ status }) {
     );
 }
 
-export default function SuperAdminDashboard({ organizations, stats }) {
+export default function SuperAdminDashboard({ organizations, stats, revenueData }) {
+    const money = (value) => `৳${Number(value || 0).toLocaleString()}`;
+    
     const toggleStatus = (org) => {
         const newStatus = org.status === 'active' ? 'suspended' : 'active';
         if (confirm(`Are you sure you want to mark ${org.name} as ${newStatus}?`)) {
@@ -75,6 +78,38 @@ export default function SuperAdminDashboard({ organizations, stats }) {
                         iconBg="bg-amber-500/20" iconColor="text-amber-400"
                         icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>}
                     />
+                    <StatCard
+                        label="Current MRR"
+                        value={money(stats.current_mrr)}
+                        iconBg="bg-purple-500/20" iconColor="text-purple-400"
+                        icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                    />
+                </div>
+
+                {/* Revenue Chart */}
+                <div className="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden p-6">
+                    <h3 className="text-lg font-bold text-white mb-6">Revenue Growth (6 Months)</h3>
+                    <div className="h-72 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={revenueData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#818cf8" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#818cf8" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+                                <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `৳${value}`} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }}
+                                    itemStyle={{ color: '#818cf8' }}
+                                    formatter={(value) => [money(value), 'Revenue']}
+                                />
+                                <Area type="monotone" dataKey="revenue" stroke="#818cf8" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
 
                 {/* Organizations Table */}

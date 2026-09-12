@@ -91,6 +91,8 @@ Route::middleware('auth')->group(function () {
     // Broadcasts
     Route::get('/broadcasts', [BroadcastController::class, 'index'])->name('broadcasts.index');
     Route::post('/broadcasts', [BroadcastController::class, 'store'])->name('broadcasts.store');
+    // Impersonation leave route (must be outside superadmin middleware but authenticated)
+    Route::post('/impersonate/leave', [\App\Http\Controllers\ImpersonationController::class, 'leave'])->name('impersonate.leave');
 });
 
 // Superadmin Routes
@@ -99,7 +101,13 @@ Route::middleware(['auth', SuperAdminMiddleware::class])->prefix('superadmin')->
 
     // Coaching List (Organizations)
     Route::get('/organizations', [SuperAdminOrganizationController::class, 'index'])->name('organizations.index');
+    Route::post('/organizations', [SuperAdminOrganizationController::class, 'store'])->name('organizations.store');
+    Route::put('/organizations/{organization}', [SuperAdminOrganizationController::class, 'update'])->name('organizations.update');
+    Route::delete('/organizations/{organization}', [SuperAdminOrganizationController::class, 'destroy'])->name('organizations.destroy');
     Route::post('/organizations/{organization}/status', [SuperAdminOrganizationController::class, 'updateStatus'])->name('organizations.update-status');
+    Route::post('/organizations/{organization}/extend-trial', [SuperAdminOrganizationController::class, 'extendTrial'])->name('organizations.extend-trial');
+    Route::post('/organizations/{organization}/change-package', [SuperAdminOrganizationController::class, 'changePackage'])->name('organizations.change-package');
+    Route::post('/organizations/{organization}/impersonate', [SuperAdminOrganizationController::class, 'impersonate'])->name('organizations.impersonate');
 
     // Packages
     Route::get('/packages', [SuperAdminPackageController::class, 'index'])->name('packages.index');

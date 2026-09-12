@@ -21,7 +21,8 @@ class SuperAdminDashboardController extends Controller
 
         return Inertia::render('Superadmin/Dashboard', [
             'organizations' => $organizations,
-            'stats' => $this->metrics->platformStats(),
+            'stats'         => $this->metrics->platformStats(),
+            'revenueData'   => $this->metrics->historicalRevenue(),
         ]);
     }
 }

@@ -61,21 +61,37 @@ Use this document to track development progress based on the architecture plan. 
 - [x] **Security & QA Checks**: Confirm Tenant isolation and timezone accuracy (BD time).
 
 ## Milestone 7: SaaS & Superadmin (Week 7)
-- [ ] **SaaS Packages System**: 
-  - [ ] Database Schema: Create `packages` and `subscriptions` tables.
-  - [ ] Define Pricing Tiers (limits primarily based on total student count):
+- [x] **SaaS Packages System**: 
+  - [x] Database Schema: Create `packages` and `subscriptions` tables.
+  - [x] Define Pricing Tiers (limits primarily based on total student count):
     - 1. Free Trial (e.g., 14 days, up to 50 students).
     - 2. Basic Package (e.g., up to 200 students).
     - 3. Standard/Pro Package (e.g., up to 500 students).
     - 4. Premium/Enterprise Package (Unlimited students).
-  - [ ] Organization Registration: Auto-assign "Free Trial" upon new coaching center signup.
-  - [ ] Plan Limits Enforcement (limit max students, batches, SMS based on current package).
-  - [ ] Subscription UI: Add Billing/Subscription page for coaching owners with upgrade prompts and trial expiry warnings.
-- [ ] **Superadmin Architecture**:
-  - [ ] Superadmin authentication & routing (TenantScope bypass logic).
-  - [ ] **Superadmin Dashboard**:
-    - [ ] View list of all registered Coaching Centers (Organizations).
-    - [ ] Aggregated usage metrics per center (Total revenue, active students, used storage).
-  - [ ] **Organization Management**:
-    - [ ] Ability to manually override or upgrade a center's subscription package.
-    - [ ] Toggle active/inactive status (suspend centers for non-payment or violations).
+  - [x] Organization Registration: Auto-assign "Free Trial" upon new coaching center signup.
+  - [x] Plan Limits Enforcement (limit max students, batches, SMS based on current package).
+  - [x] Subscription UI: Add Billing/Subscription page for coaching owners with upgrade prompts and trial expiry warnings.
+- [x] **Superadmin Architecture**:
+  - [x] Superadmin authentication & routing (TenantScope bypass logic).
+  - [x] **Superadmin Dashboard**:
+    - [x] View list of all registered Coaching Centers (Organizations).
+    - [x] Aggregated usage metrics per center (Total revenue, active students, used storage).
+  - [x] **Organization Management**:
+    - [x] Ability to manually override or upgrade a center's subscription package.
+    - [x] Toggle active/inactive status (suspend centers for non-payment or violations).
+
+## Milestone 8: Advanced Superadmin & SaaS Management (Week 8)
+- [x] **Tenant Impersonation ("Login As")**
+  - [x] Superadmin can securely authenticate as a specific tenant's admin user.
+  - [x] Impersonation banner shown on tenant dashboard to return to superadmin view.
+- [x] **Financial Metrics & MRR Dashboard**
+  - [x] Monthly Recurring Revenue (MRR) tracking and growth charts.
+  - [x] Update Superadmin KPIs with financial data (Recharts integration).
+- [ ] **Full Package Management (CRUD)**
+  - [ ] Add ability to create, edit, and delete subscription packages dynamically via UI.
+  - [ ] Modify pricing, trial days, and student limits on the fly.
+- [ ] **Global Announcements & Alerts**
+  - [ ] System to broadcast maintenance or updates to all coaching centers.
+  - [ ] Tenant dashboard alert banners (Info, Warning, Error).
+- [ ] **Centralized Invoices & Payments View**
+  - [ ] Superadmin page to track all historical payments across the entire platform.

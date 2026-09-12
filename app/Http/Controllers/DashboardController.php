@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Package;
 use App\Services\DashboardMetricsService;
 use Carbon\Carbon;
 use Inertia\Inertia;
@@ -29,13 +30,30 @@ class DashboardController extends Controller
         $organization = $user->organization;
 
         // Get the organization's current active subscription
-        $currentSubscription = $organization->activeSubscription;
+        $currentSubscription = $organization?->activeSubscription;
         $currentPackage = null;
         $currentPlanName = null;
+        $isOnTrial = false;
+        $trialDaysRemaining = 0;
 
         if ($currentSubscription) {
             $currentPackage = $currentSubscription->package;
             $currentPlanName = $currentPackage?->name;
+            $isOnTrial = $currentSubscription->isOnTrial();
+            if ($isOnTrial && $currentSubscription->trial_ends_at) {
+                $trialDaysRemaining = max(0, (int) now()->diffInDays($currentSubscription->trial_ends_at));
+            }
+        } else {
+            // Default to Free Trial if no active subscription
+            $freeTrialPackage = Package::where('slug', 'free-trial')->first();
+            if ($freeTrialPackage && $organization) {
+                $currentPackage = $freeTrialPackage;
+                $currentPlanName = $freeTrialPackage->name;
+                $isOnTrial = true;
+
+                $daysUsed = (int) now()->diffInDays($organization->created_at);
+                $trialDaysRemaining = max(0, $freeTrialPackage->trial_days - $daysUsed);
+            }
         }
 
         // Get all available packages
@@ -54,6 +72,8 @@ class DashboardController extends Controller
         return Inertia::render('Coaching/Plan/Index', [
             'currentPackage' => $currentPackage,
             'currentPlanName' => $currentPlanName,
+            'isOnTrial' => $isOnTrial,
+            'trialDaysRemaining' => $trialDaysRemaining,
             'packages' => $packages,
             'user' => $user,
         ]);

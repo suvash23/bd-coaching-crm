@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
@@ -6,9 +6,8 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
-import { money } from '@/utils'; // assuming this utility exists, or inline the formatting
 
-export default function CoachingPlan({ currentPackage, currentPlanName, packages, user }) {
+export default function CoachingPlan({ currentPackage, currentPlanName, packages, user, isOnTrial, trialDaysRemaining }) {
     const money = (value) => `৳${Number(value || 0).toLocaleString()}`;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,6 +21,23 @@ export default function CoachingPlan({ currentPackage, currentPlanName, packages
             <Head title="Coaching Plan" />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+                {/* Trial Banner */}
+                {isOnTrial && (
+                    <div className="bg-indigo-900 border border-indigo-500 rounded-2xl p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <h3 className="text-white font-bold">Free Trial Active</h3>
+                                <p className="text-indigo-200 text-sm">
+                                    You have {trialDaysRemaining} {trialDaysRemaining === 1 ? 'day' : 'days'} remaining in your free trial.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Current Plan Section */}
                 <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6 mb-8">
                     <div className="flex items-start gap-4">
@@ -38,10 +54,17 @@ export default function CoachingPlan({ currentPackage, currentPlanName, packages
                             </h3>
                             {hasCurrentPlan && (
                                 <p className="text-sm text-gray-400 mt-1">
-                                    {currentPackage?.isUnlimited() ? 'Unlimited students' : `Up to ${currentPackage?.max_students} students`}
+                                    {currentPackage?.max_students === null ? 'Unlimited students' : `Up to ${currentPackage?.max_students} students`}
                                 </p>
                             )}
                         </div>
+                        {hasCurrentPlan && (
+                            <div className="ml-auto">
+                                <PrimaryButton onClick={() => setIsModalOpen(true)}>
+                                    Change Plan
+                                </PrimaryButton>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -107,19 +130,22 @@ export default function CoachingPlan({ currentPackage, currentPlanName, packages
                                     </li>
                                 </ul>
 
-                                {hasCurrentPlan ? (
-                                    <p className="text-xs text-gray-500 mb-4">
-                                        You are currently on: {currentPlanName}
-                                    </p>
+                                {isSelected ? (
+                                    <button
+                                        disabled
+                                        className="w-full py-2.5 rounded-xl text-sm font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 bg-gray-600 text-gray-400 cursor-not-allowed"
+                                    >
+                                        Current Plan
+                                    </button>
                                 ) : (
                                     <button
-                                        onClick={() => setSelectedPackage(pkg)}
-                                        className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 ${isSelected
-                                                ? 'bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-600'
-                                                : 'bg-gray-700 hover:bg-gray-600 text-gray-200 focus:ring-gray-600'}
-                                            }`}
+                                        onClick={() => {
+                                            setSelectedPackage(pkg);
+                                            setIsModalOpen(true);
+                                        }}
+                                        className="w-full py-2.5 rounded-xl text-sm font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 bg-gray-700 hover:bg-gray-600 text-gray-200 focus:ring-gray-600"
                                     >
-                                        Select Plan
+                                        Subscribe
                                     </button>
                                 )}
                             </div>
